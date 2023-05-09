@@ -1,41 +1,76 @@
+import Image from 'next/image';
 import Carousel from 'react-bootstrap/Carousel';
+
+import AndroidImage from '/public/image/img/carousel-mobile.jpg';
+import WebImage from '/public/image/img/carousel-web.jpg';
+import CloudImage from '/public/image/img/carousel-cloud.jpg';
+import IoTImage from '/public/image/img/carousel-iot.jpg';
 
 function UncontrolledExample() {
   return (
     <Carousel>
       <Carousel.Item interval={3000}>
-        <img
-          className="d-block w-100"
-          src="http://via.placeholder.com/600x300/000000/ffffff"
-          alt="First slide"
-        />
+        <div style={{ width: '70vw', height: '60vh' }}>
+          <Image
+            className="d-block w-100"
+            src={IoTImage}
+            alt="arduino"
+            fill
+            sizes='(max-width: 300px)80vw, (max-width: 600px)65vw'
+            quality={90}
+            loading="lazy"
+          />
+        </div>
         <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          <h1>IoT</h1>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item interval={3000}>
-        <img
-          className="d-block w-100"
-          src="http://via.placeholder.com/600x300/950/ffffff"
-          alt="Second slide"
-        />
+        <div style={{ width: '70vw', height: '60vh' }}>
+          <Image
+            className="d-block w-100"
+            src={WebImage}
+            alt="web"
+            fill
+            sizes='(max-width: 300px)80vw, (max-width: 600px)65vw'
+            quality={90}
+            loading="lazy"
+          />
+        </div>
         <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <h1>Web</h1>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item interval={3000}>
-        <img
-          className="d-block w-100"
-          src="http://via.placeholder.com/600x300/09a/ffffff"
-          alt="Third slide"
-        />
+        <div style={{ width: '70vw', height: '60vh' }}>
+          <Image
+            className="d-block w-100"
+            src={AndroidImage}
+            alt="android"
+            fill
+            sizes='(max-width: 300px)80vw, (max-width: 600px)65vw'
+            quality={90}
+            loading="lazy"
+          />
+        </div>
         <Carousel.Caption>
-          <h3>Third slide label</h3>
-          <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
-          </p>
+        <h1>Android</h1>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item interval={3000}>
+        <div style={{ width: '70vw', height: '60vh' }}>
+          <Image
+            className="d-block w-100"
+            src={CloudImage}
+            alt="cloud"
+            fill
+            sizes='(max-width: 300px)80vw, (max-width: 600px)65vw'
+            quality={90}
+            loading="lazy"
+          />
+        </div>
+        <Carousel.Caption>
+        <h1>Cloud</h1>
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>
