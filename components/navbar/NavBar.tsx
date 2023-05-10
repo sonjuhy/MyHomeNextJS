@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import Logo from "/public/image/icon/MyhomeIcon-white.png"
+import LogoColor from "/public/image/icon/MyhomeIcon.png"
 import SignIn from "/public/image/icon/signIn.png"
 
 import {useState} from 'react';
@@ -12,6 +13,7 @@ type NavProps = {
 }
 
 export default function NavBar({back, mode}: NavProps): JSX.Element {
+  const [logoSrc, setLogoSrc] = useState(mode === 'dark' ? Logo : LogoColor);
 
   return (
     // <Navbar bg="Transition" expand="lg" sticky="top" variant="dark" className="mainNavBar">
@@ -20,7 +22,7 @@ export default function NavBar({back, mode}: NavProps): JSX.Element {
         <Navbar.Brand >
           <Link href="/" className="nav-link">
             <Image
-              src={Logo}
+              src={logoSrc}
               width="35"
               height="35"
               className="d-inline-block align-top"
