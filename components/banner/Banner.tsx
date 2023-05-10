@@ -1,4 +1,5 @@
 import Image from "next/image";
+import {useRouter} from 'next/router';
 import {Button, Row} from "react-bootstrap";
 
 import NavBar from '@/components/navbar/NavBar'
@@ -6,14 +7,16 @@ import NavBar from '@/components/navbar/NavBar'
 import BannerImage from '/public/image/img/banner.jpg'
 
  const Home = () => {
+    const router = useRouter();
+
     return <div className='banner-background'>
         <NavBar back="Transition" mode="dark"></NavBar>
         <div className="d-flex justify-content-center">
             <div className="d-flex justify-content-center container-main">
                 <Row>
                     <h1 className="text-main text-center">Main Page</h1>
-                    <Button type="button" className="btn btn-primary m-1">SIGN IN</Button>
-                    <Button type="button" className="btn btn-success m-1">SIGN UP</Button>
+                    <Button type="button" className="btn btn-primary m-1" onClick={() => router.push('/signin')}>SIGN IN</Button>
+                    <Button type="button" className="btn btn-success m-1" onClick={() => router.push('/signup')}>SIGN UP</Button>
                 </Row>
             </div>
         </div>
