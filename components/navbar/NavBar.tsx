@@ -34,9 +34,8 @@ export default function NavBar({back, mode}: NavProps): JSX.Element {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <Link href='/image' className="nav-link">image</Link>
-            <Link href='/video' className="nav-link">video</Link>
+            <Link href='/about' className="nav-link">about</Link>
+            {/* <Link href='/video' className="nav-link">video</Link> */}
           </Nav>
           <div className="d-flex">
             <Image
