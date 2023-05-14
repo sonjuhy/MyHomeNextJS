@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import Logo from "/public/image/icon/MyhomeIcon-white.png"
+import Logo from "/public/image/icon/MyHomeIcon-white.png"
 import LogoColor from "/public/image/icon/MyhomeIcon.png"
 import SignIn from "/public/image/icon/signIn.png"
 
@@ -27,6 +27,7 @@ export default function NavBar({back, mode}: NavProps): JSX.Element {
               height="35"
               className="d-inline-block align-top"
               alt="React Bootstrap logo"
+              priority
             />
             MyHome
           </Link>
