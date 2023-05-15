@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 
-const BASE_URL = 'http://localhost:8080/';
-
-export default function form() {
+type propsForm = {
+    signIn: Function
+}
+export default function form({signIn} : propsForm) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -17,17 +18,7 @@ export default function form() {
         setPassword(element.target.value);
     }
 
-    async function signIn(){
-        const data = await axios.request({
-            url: BASE_URL,
-            method: 'POST',
-            data:{
-                id: email,
-                password: password
-            }
-        })
-        console.log(data.status);
-    }
+    
 
     return (
         <Form>
@@ -47,16 +38,14 @@ export default function form() {
                 </Form.Text>
             </Form.Group>
             <div className="d-grid gap-2">
-                <Button variant="success" type="submit" onClick={() =>{
-                    console.log("Success!");
-                    console.log(email);
-                    console.log(password);
+                <Button variant="success" onClick={() =>{
+                    signIn(email, password);
                 }}>
                     Log In
                 </Button>
             </div>
             <br/>
-            <p className='text-center'>Don't have a account? <Link href='/signup'>Sign Up</Link></p>
+            <p className='text-center'>Don't have an account? <Link href='/signup'>Sign Up</Link></p>
         </Form>
     )
 }

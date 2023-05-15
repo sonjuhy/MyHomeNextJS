@@ -6,11 +6,14 @@ import NavBar from '@/components/navbar/NavBar'
 
 import BannerImage from '/public/image/img/banner.jpg'
 
- const Home = () => {
+type propsBanner = {
+    sign: boolean;
+}
+ export default function Banner({sign}:propsBanner) {
     const router = useRouter();
 
     return <div className='banner-background'>
-        <NavBar back="Transition" mode="dark"></NavBar>
+        <NavBar back="Transition" mode="dark" sign={sign}></NavBar>
         <div className="d-flex justify-content-center">
             <div className="d-flex justify-content-center container-main">
                 <Row>
@@ -47,5 +50,3 @@ import BannerImage from '/public/image/img/banner.jpg'
         `}</style>
     </div>
 }
-
-export default Home;

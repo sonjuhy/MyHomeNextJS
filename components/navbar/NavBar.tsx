@@ -2,21 +2,37 @@ import Link from "next/link"
 import Image from "next/image"
 import Logo from "/public/image/icon/MyHomeIcon-white.png"
 import LogoColor from "/public/image/icon/MyhomeIcon.png"
-import SignIn from "/public/image/icon/signIn.png"
+import Login from "/public/image/icon/login.png"
+import LoginWhite from "/public/image/icon/login-white.png"
+import Logout from "/public/image/icon/logout.png"
+import LogoutWhite from "/public/image/icon/logout-white.png"
 
 import {useState} from 'react';
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap"
+import { Container, Nav, Navbar } from "react-bootstrap"
+import { useRouter } from "next/router"
 
 type NavProps = {
   back : string;
   mode : string;
+  sign : boolean;
 }
 
-export default function NavBar({back, mode}: NavProps): JSX.Element {
+export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
   const [logoSrc, setLogoSrc] = useState(mode === 'dark' ? Logo : LogoColor);
+  const [signLogo, setSignLogo] = useState(mode === 'dark' ? LoginWhite : Login);
+  const [logOutLogo, setLogOutLogo] = useState(mode === 'dark' ? LogoutWhite : Logout);
+  const router = useRouter();
+
+  function logOut(){
+    console.log('logout');
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    if(accessToken !== null){
+      sessionStorage.removeItem('accessToken');
+      router.reload();
+    }
+  }
 
   return (
-    // <Navbar bg="Transition" expand="lg" sticky="top" variant="dark" className="mainNavBar">
     <Navbar bg={back} expand="lg" sticky="top" variant={mode} className="mainNavBar">
       <Container className="container">
         <Navbar.Brand >
@@ -36,16 +52,30 @@ export default function NavBar({back, mode}: NavProps): JSX.Element {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Link href='/about' className="nav-link">about</Link>
-            {/* <Link href='/video' className="nav-link">video</Link> */}
           </Nav>
           <div className="d-flex">
-            <Image
-              src={SignIn}
-              width="20"
-              height="20"
-              className="d-inline-block align-top"
-              alt="sign in logo"
-            />
+            {!sign && (
+              <Link href='/signin'>
+                <Image
+                  src={signLogo}
+                  width="50"
+                  height="50"
+                  className="d-inline-block align-top"
+                  alt="sign in logo"
+                />
+            </Link>
+            )}
+            {sign && (
+              <a onClick={logOut} className="logout">
+              <Image
+                  src={logOutLogo}
+                  width="50"
+                  height="50"
+                  className="d-inline-block align-top"
+                  alt="log out logo"
+                />
+            </a>
+            )}
           </div>
         </Navbar.Collapse>
       </Container>
@@ -58,6 +88,9 @@ export default function NavBar({back, mode}: NavProps): JSX.Element {
           }
           .container{
             color : white;
+          }
+          .logout {
+            cursor: pointer;
           }
           `
         }

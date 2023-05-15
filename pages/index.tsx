@@ -4,12 +4,57 @@ import Footer from '@/components/footer/Footer'
 import Carousel from '@/components/carousel/Carousel'
 import TopicCard from '@/components/card/TopicCard'
 
-import { Container, Stack, Row, Col } from 'react-bootstrap'
+import LogoColor from '/public/image/icon/MyhomeIcon.png';
+
+import { Container, Row, Col, ToastContainer, Toast } from 'react-bootstrap'
+import { useRouter } from 'next/router'
+import Image from 'next/image'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
+  const [sign, setSign] = useState(false);
+  const [errorToast, setErrorToast] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const router = useRouter();
+
+  async function userPermissionCheck() {
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    if(accessToken !== null){
+      const data = await axios.request({
+        url: process.env.BASE_URL+'/auth/getUserInfo/'+accessToken,
+        method: 'GET',
+      })
+      if(data.status === 200){
+        var result = data.data;
+        setSign(true);
+        if(result.auth !== 'associate'){
+          // router.push('/main');
+          setSign(true);
+        }
+        else{
+          setErrorMessage('아직 준회원이십니다. 관리자의 승인을 받아 정회원 이후 이용가능합니다.');
+          setErrorToast(true);
+        }
+      }
+    }
+  }
+  useEffect(() => {
+    userPermissionCheck();
+  },[])
   return (
     <main>
-      <Banner></Banner>
+      <Banner sign={sign}></Banner>
+      <ToastContainer className="p-3" position={'top-start'}>
+          <Toast show={errorToast} onClose={() => {setErrorToast(false)}} delay={2000} autohide={true}>
+              <Toast.Header>
+                  <Image alt='logo' src={LogoColor} className="rounded me-2" width={20} height={20} />
+                  <strong className="me-auto">권한 에러</strong>
+              </Toast.Header>
+              <Toast.Body>{errorMessage}</Toast.Body>
+          </Toast>
+      </ToastContainer>
       <div className='background-main'>
         <Container>
           <br />
@@ -18,10 +63,6 @@ export default function Home() {
           <br />
           <Carousel />
         </Container>
-        <br />
-        {/* <h1 className='text-center'>WELCOME TO OUR SITE!</h1>
-        <br />
-        <h4 className='text-center'>This site is part of MyHome Project Ver 2.0</h4> */}
         <br />
         <MiddleBanner />
       </div>

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Container, Row, Col } from "react-bootstrap"
 
-import Logo from "/public/image/icon/MyhomeIcon-white.png"
+import Logo from "/public/image/icon/MyHomeIcon-white.png"
 
 import Email from "/public/image/icon/email.png"
 import Blog from "/public/image/icon/blog.png"
