@@ -20,7 +20,7 @@ import Link from 'next/link';
 
 export default function Main() {
     const [userName, setUserName] = useState('');
-    const [visible, setVisible] = useState(true);
+    const [visible, setVisible] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -51,12 +51,12 @@ export default function Main() {
             console.log("Token is null");
             setErrorMessage('접근권한이 없습니다. 회원가입 이후 이용가능합니다.');
             setErrorToast(true);
-            // router.push('/', undefined, {shallow: true});
+            router.push('/', undefined, {shallow: true});
         }
     }
 
     useEffect(() => {
-        // userPermissionCheck();
+        userPermissionCheck();
     }, []);
     return (
         <>
