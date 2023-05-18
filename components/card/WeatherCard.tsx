@@ -1,20 +1,14 @@
-import Sunny from '/public/image/img/weather/weather-sunny.jpg';
-import Cloudy from '/public/image/img/weather/weather-cloudy.jpg';
-import Night from '/public/image/img/weather/weather-night.jpg';
-import Rainy from '/public/image/img/weather/weather-rain.jpg';
-import Snow from '/public/image/img/weather/weather-snow.jpg';
-import Thunder from '/public/image/img/weather/weather-thunder.jpg';
-import Windy from '/public/image/img/weather/weather-windy.jpg';
-
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Card from 'react-bootstrap/Card';
+import axios from 'axios';
 
 function ImgOverlayExample() {
-    const [weather, setWeather] = useState('');
-    const [status, setStatus] = useState('');
-    const [temperature, setTemperature] = useState('');
-    const [picture, setPicture] = useState('/public/image/img/weather/weather-sunny.jpg');
+    const [weather, setWeather] = useState('맑음');
+    const [wind, setWind] = useState('남풍 1.0m/s');
+    const [rain, setRain] = useState('없음');
+    const [temperature, setTemperature] = useState('21');
+    const [time, setTime] = useState('00:00');
+    const [picture, setPicture] = useState('image/img/weather/weather-sunny.jpg');
 
     const sunny = 'image/img/weather/weather-sunny.jpg';
     const cloudy = 'image/img/weather/weather-cloudy.jpg';
@@ -23,18 +17,63 @@ function ImgOverlayExample() {
     const snow = 'image/img/weather/weather-snow.jpg';
     const thunder = 'image/img/weather/weather-thunder.jpg';
     const windy = 'image/img/weather/weather-windy.jpg';
+    
+
+    async function getVilageFcst(){
+      const data = await axios.request({
+        url: process.env.BASE_URL+'/weather/getVilageFcst',
+        method: 'POST',
+        data:{
+          name: '',
+          code: '',
+          x_code: 91,
+          y_code: 76
+        }
+      });
+      var weatherInfo = data.data[0];
+      setTemperature(weatherInfo.t1H);
+      var pty = weatherInfo.pty;
+      if(weatherInfo.lgt !== null){
+        pty = '번개';
+      }
+      if(weatherInfo.pcp !== null){
+        setRain(weatherInfo.pcp);
+      }
+      setWeather(pty);
+      setTemperature(weatherInfo.tmp);
+      setWind(weatherInfo.vec+'풍 '+weatherInfo.wsd+'m/s');
+
+      if(pty === '비'){
+        setPicture(rainy);
+      }
+      else if(pty === '눈/비' || pty === '눈'){
+        setPicture(snow);
+      }
+      else if(pty === '번개'){
+        setPicture(thunder);
+      }
+      else{
+        if(weatherInfo.sky == '맑음'){
+          setWeather('맑음');
+          setPicture(sunny);
+        }
+        else if(weatherInfo.sky == '구름많음' || weatherInfo.sky == '흐림'){
+          setWeather(weatherInfo.sky);
+          setPicture(cloudy);
+        }
+        
+      }
+      setTime(weatherInfo.fcstTime+' 기준');
+      console.log(data);
+    }
 
     useEffect(() => {
-        setWeather('맑음');
-        setStatus('화창한 날씨');
-        setTemperature('10');
-        setPicture('Sunny');
+        getVilageFcst();
     },[])
-    
   return (
     <Card className="bg-dark text-white shadow mb-5" style={{height: '25vh'}}>
       <Card.Img 
-      src={night} 
+      src={picture} 
       className="img-fluid" 
       style={{
         height: '25vh',
@@ -46,12 +85,12 @@ function ImgOverlayExample() {
         <Card.Title>{weather}</Card.Title>
         <br/>
         <Card.Text>
-          {status}
+          {wind}, {temperature} °C
         </Card.Text>
         <Card.Text>
-          {temperature} °C
+          강수량 : {rain}
         </Card.Text>
-        <Card.Text>Last updated 3 mins ago</Card.Text>
+        <Card.Text>경상남도 창원시 성산구, {time}.</Card.Text>
       </Card.ImgOverlay>
     </Card>
   );
