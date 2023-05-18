@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -6,54 +6,81 @@ import Card from 'react-bootstrap/Card';
 import LightOffIcon from '/public/image/icon/light-off-cardview.png';
 import LightOnIcon from '/public/image/icon/light-on-cardview.png';
 import { Col, Row, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import axios from 'axios';
 
 interface Room {
     name: string;
+    krName: string;
+    category: string;
     status: string;
+    connect: string;
 }
 
 function WithHeaderStyledExample(): JSX.Element {
+    const [roomList, setRoomList] = useState<Room[]>([]);
 
-    // this is test code. this code will be changed axios code
-    let strObj: Room = { name: 'living room', status: 'on' };
-    let strObj1: Room = { name: 'kitchen', status: 'off' };
-    let strObj2: Room = { name: 'small room', status: 'off' };
-    let strObj3: Room = { name: 'bath room', status: 'on' };
-    let strObj4: Room = { name: 'middle room', status: 'on' };
-    let strObj5: Room = { name: 'big room', status: 'on' };
-    let strObj6: Room = { name: 'balcony', status: 'on' };
-    let strObj7: Room = { name: 'living1 room', status: 'on' };
-    let strObj8: Room = { name: 'living2 room', status: 'off' };
-    let strObj9: Room = { name: 'living3 room', status: 'off' };
+    async function getLightList(){
+        const list:any = await axios.request({
+            url: process.env.BASE_URL+'/light/getAllList',
+            method: 'GET'
+        });
+        
+        var room_list: Room[] = [];
 
-    var room_list: Room[] = [];
-    room_list.push(strObj, strObj1, strObj2, strObj3, strObj4, strObj5, strObj6, strObj7, strObj8, strObj9);
-
-    // use axios connection to server(GET) and control iot
-    function lightControl (name:string, action:string){
-        console.log(name, action);
+        for (const idx in list.data){
+            if(list.data[idx].connect == 'Off') continue;
+            let object: Room = {
+                name: list.data[idx].room, 
+                krName: list.data[idx].kor, 
+                category: list.data[idx].category,
+                status: list.data[idx].state,
+                connect: list.data[idx].connect
+            }
+            room_list.push(object);
+        }
+        setRoomList(room_list);
     }
+    // use axios connection to server(GET) and control iot
+    async function lightControl (room: Room){
+        var action = room.status === 'On' ? 'Off' : 'On';
+
+        const data:any = await axios.request({
+            url: process.env.BASE_URL+'/light/control',
+            method: 'POST',
+            data:{
+                room: room.name,
+                kor: room.krName,
+                category: room.category,
+                state: action,
+                connect: room.connect
+            }
+        });
+        setTimeout(getLightList, 500);
+    }
+    useEffect(()=>{
+        getLightList();
+    },[]);
     return (
         <Card bg={'light'} className='shadow p-3 mb-5 rounded'>
             <Row className='g-4'>
-                {Array.from({ length: room_list.length }).map((_, index: number) => (
-                    <Col key={room_list[index].name}>
+                {Array.from({ length: roomList.length }).map((_, index: number) => (
+                    <Col key={roomList[index].name}>
                         <Container style={{padding:'2vh', width:'12rem'}}>
-                            <Card className='shadow' >
+                            <Card className='shadow'>
                                 <br/>
-                                <Card.Title className='text-center'>{(room_list[index] as Room).name}</Card.Title>
+                                <Card.Title className='text-center'>{(roomList[index] as Room).krName}</Card.Title>
                                 <OverlayTrigger 
-                                key={room_list[index].name} 
+                                key={roomList[index].name} 
                                 placement={'top'}
                                 overlay={
-                                        <Tooltip id={`tooltip-${room_list[index].name}`}>
-                                            불이 {room_list[index].status === 'on' ? '켜져있습니다.' : '꺼져있습니다.'}
+                                        <Tooltip id={`tooltip-${roomList[index].name}`}>
+                                            불이 {roomList[index].status === 'On' ? '켜져있습니다.' : '꺼져있습니다.'}
                                         </Tooltip>
                                     }
                                 >
                                     <Image
                                         alt="Light"
-                                        src={(room_list[index] as Room).status === 'on' ? LightOnIcon : LightOffIcon}
+                                        src={(roomList[index] as Room).status === 'On' ? LightOnIcon : LightOffIcon}
                                         loading = 'lazy'
                                         layout="responsive"
                                     />
@@ -62,8 +89,8 @@ function WithHeaderStyledExample(): JSX.Element {
                                     {(room_list[index] as Room).status}
                                 </Card.Text> */}
                                 <Button variant="primary" onClick={() => {
-                                    lightControl((room_list[index] as Room).name, (room_list[index] as Room).status === 'on' ? 'OFF' : 'ON')
-                                }}>{(room_list[index] as Room).status === 'on' ? 'OFF' : 'ON'}</Button>
+                                    lightControl(roomList[index])
+                                }}>{(roomList[index] as Room).status === 'On' ? 'OFF' : 'ON'}</Button>
                             </Card>
                         </Container>
                     </Col>
