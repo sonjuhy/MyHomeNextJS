@@ -102,4 +102,12 @@
  - GitHub
  - Jenkins
  - Docker
->>>>>>> 54d552caf713ffbcb43d4e2ffaf6da7929d709d9
+
+
+
+## 구조도
+
+---
+
+- 메인 구조
+    ![Untitled](https://user-images.githubusercontent.com/2987059/240445513-68c778ed-5ec2-480f-a002-77be72aa39ad.PNG)
