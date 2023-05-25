@@ -90,9 +90,13 @@ export default function Main() {
                     <div className={`${styles.content}`}>
                         <br/>
                         <h1>Notice</h1>
-                        <CardNotice/>
+                        <Link href="/notice">
+                            <CardNotice/>
+                        </Link>
                         <h1>Weather</h1>
-                        <CardWeather/>
+                        <Link href="/weather">
+                            <CardWeather/>
+                        </Link>
                         <h1>Light Control</h1>
                         <CardLight/>
                         <h1></h1>
