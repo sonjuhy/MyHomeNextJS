@@ -23,9 +23,9 @@ export default function SignIn() {
             url: process.env.BASE_URL+'/auth/signIn',
             method: 'POST',
             data:{
-                userId: 0,
+                Id: 0,
+                userId: email,
                 name: '',
-                id: email,
                 password: password,
                 accessToken: '',
                 refreshToken: '',
