@@ -42,16 +42,15 @@ function WithHeaderStyledExample(): JSX.Element {
     }
     // use axios connection to server(GET) and control iot
     async function lightControl (room: Room){
-        var action = room.status === 'On' ? 'Off' : 'On';
-
+        var accessToken = sessionStorage.getItem('accessToken');
         const data:any = await axios.request({
-            url: process.env.BASE_URL+'/light/control',
+            url: process.env.BASE_URL+'/light/control/'+accessToken,
             method: 'POST',
             data:{
                 room: room.name,
                 kor: room.krName,
                 category: room.category,
-                state: action,
+                state: room.status,
                 connect: room.connect
             }
         });
