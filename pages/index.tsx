@@ -24,13 +24,14 @@ export default function Home() {
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
     if (accessToken !== null) {
       AuthValidate(accessToken)
-      .then(()=>{
+      .then(()=>{        
         setSign(true);
-        // router.push('/main');
+        router.push('/main');
       })
       .catch(()=>{
         setErrorMessage('아직 준회원이십니다. 관리자의 승인을 받아 정회원 이후 이용가능합니다.');
         setErrorToast(true);
+        setSign(true);
       });
     }
 }
@@ -41,7 +42,7 @@ return (
   <main>
     <Banner sign={sign}></Banner>
     <ToastContainer className="p-3" position={'top-start'}>
-      <Toast show={errorToast} onClose={() => { setErrorToast(false) }} delay={2000} autohide={true}>
+      <Toast show={errorToast} onClose={() => { setErrorToast(false) }} delay={4000} autohide={true}>
         <Toast.Header>
           <Image alt='logo' src={LogoColor} className="rounded me-2" width={20} height={20} />
           <strong className="me-auto">권한 에러</strong>
