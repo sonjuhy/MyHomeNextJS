@@ -67,7 +67,7 @@ function WithHeaderStyledExample(): JSX.Element {
                         <Container style={{padding:'2vh', width:'12rem'}}>
                             <Card className='shadow'>
                                 <br/>
-                                <Card.Title className='text-center'>{(roomList[index] as Room).krName}</Card.Title>
+                                <Card.Title className='text-center' style={{fontSize:'1rem'}}>{(roomList[index] as Room).krName}</Card.Title>
                                 <OverlayTrigger 
                                 key={roomList[index].name} 
                                 placement={'top'}
@@ -84,10 +84,7 @@ function WithHeaderStyledExample(): JSX.Element {
                                         layout="responsive"
                                     />
                                 </OverlayTrigger>
-                                {/* <Card.Text>
-                                    {(room_list[index] as Room).status}
-                                </Card.Text> */}
-                                <Button variant="primary" onClick={() => {
+                                <Button variant={roomList[index].status === 'On' ? 'info' : 'primary'} onClick={() => {
                                     lightControl(roomList[index])
                                 }}>{(roomList[index] as Room).status === 'On' ? 'OFF' : 'ON'}</Button>
                             </Card>
