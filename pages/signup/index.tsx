@@ -47,6 +47,10 @@ export default function SignUp() {
                 setModal(true);
             }
         }
+        else{
+            setErrorMessage('회원가입 과정에서 문제가 있습니다. 다시 시도해주세요.');
+            setErrorToast(true);
+        }
     }
 
     return (
