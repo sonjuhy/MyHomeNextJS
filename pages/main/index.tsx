@@ -2,9 +2,7 @@ import AuthValidate from '@/modules/authValidate/authValidate'
 import NavBar from '@/components/navbar/NavBar';
 import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
-import CardLight from "@/components/card/LightMainCard";
-import CardNotice from "@/components/card/NoticeCard";
-import CardWeather from '@/components/card/WeatherCard';
+import MainPage from '@/components/pageComponents/main/mainPage';
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import UserIcon from '/public/image/icon/user-white.png';
@@ -13,7 +11,7 @@ import SettingIcon from '/public/image/icon/setting-white.png';
 import Image from 'next/image'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Col, Container, Row, Stack, Toast, ToastContainer } from 'react-bootstrap';
+import { Toast, ToastContainer } from 'react-bootstrap';
 import Link from 'next/link';
 
 
@@ -23,10 +21,14 @@ export default function Main() {
     const [visible, setVisible] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [category, setCategory] = useState('home');
 
     const router = useRouter();
     const theme = 'dark';
 
+    function selectedCategory(selected: string) {
+        setCategory(selected);
+    }
     async function userPermissionCheck() {
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         if (accessToken !== null) {
@@ -82,24 +84,27 @@ export default function Main() {
                             </Link>
                         </div>
                         
-                        <Link href="/">Home</Link>
-                        <Link href="/light">Light</Link>
-                        <Link href="/weather">Weather</Link>
-                        <Link href="/cloud">Cloud</Link>
+                        <div className={category === 'home' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('home')}}>Home</div>
+                        <div className={category === 'light' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('light')}}>Light</div>
+                        <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('weather')}}>Weather</div>
+                        <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('cloud')}}>Cloud</div>
                     </div>
-                    <div className={`${styles.content}`}>
-                        <br/>
-                        <h1>Notice</h1>
-                        <Link href="/notice">
-                            <CardNotice/>
-                        </Link>
-                        <h1>Weather</h1>
-                        <Link href="/weather">
-                            <CardWeather/>
-                        </Link>
-                        <h1>Light Control</h1>
-                        <CardLight/>
-                        <h1></h1>
+                    <div>
+                        {category === 'home' && (
+                            <MainPage selectMenu={selectedCategory}/>
+                        )}
+                        {category === 'light' && (
+                            <div>Light</div>
+                        )}
+                        {category === 'weather' && (
+                            <div>Weather</div>
+                        )}
+                        {category === 'cloud' && (
+                            <div>Cloud</div>
+                        )}
+                        {category === 'notice' && (
+                            <div>Notice</div>
+                        )}
                     </div>
                 </div>
             )}

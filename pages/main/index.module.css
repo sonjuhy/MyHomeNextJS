@@ -9,7 +9,7 @@
     border-top: 1px solid rgb(85, 85, 85);
 }
 
-.sidebar a {
+.sidebar a{
     display: block;
     color: white;
     padding: 16px;
@@ -19,6 +19,28 @@
 .sidebar a:hover:not(.active) {
     background-color: #f8f9fa;
     color: rgb(73, 73, 73);
+}
+
+.sidebarMenu{
+    display: block;
+    color: white;
+    padding: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sidebarMenu:hover:not(.active) {
+    background-color: #f8f9fa;
+    color: rgb(73, 73, 73);
+}
+
+.selectedMenu {
+    background-color: #666ef8;
+    display: block;
+    color: white;
+    padding: 16px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .content {
