@@ -18,13 +18,13 @@ export default function SignIn() {
     const router = useRouter();
 
     async function signIn(email: string, password: string){
-        
+        console.log('signing in : ' + email);
         const data = await axios.request({
             url: process.env.BASE_URL+'/auth/signIn',
             method: 'POST',
             data:{
-                Id: 0,
-                userId: email,
+                userId: 0,
+                id: email,
                 name: '',
                 password: password,
                 accessToken: '',
@@ -49,7 +49,10 @@ export default function SignIn() {
                 router.push('/');
             }
         }
-        
+        else{
+            setErrorMessage('로그인 과정에서 문제가 있습니다. 다시 시도해주세요.');
+            setErrorToast(true);
+        }
     }
 
     return (
