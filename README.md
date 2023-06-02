@@ -2,13 +2,9 @@
 
 ## 개요
 
----
-
 기존 MyHome Project 1.0을 성공적으로 마무리 하고 모바일로만 가능한 접근 한계를 웹으로 넓히고 레거시 코드들을 리팩토링하며 안정성, 성능, 편의성을 업그레이드 하고자 한다.
 
 ## 구상
-
----
 
 - 원격 클라이언트
     - 안드로이드
@@ -39,8 +35,6 @@
 
 ## 개발 환경
 
----
-
 - Android Studio
 - IntelliJ
 - Visual Studio Code
@@ -48,8 +42,6 @@
 - Arduino IDE
 
 ## 사용 라이브러리
-
----
 
 - Switch(ESP8266)
     - Http (OTA Update)
@@ -79,8 +71,6 @@
 
 ## 사용 언어
 
----
-
 - JAVA
 - Python
 - TypeScript
@@ -89,15 +79,11 @@
 
 ## 사용 프레임 워크
 
----
-
  - Spring Boot
  - Django
  - NextJS
 
 ## CI/CD
-
----
 
  - GitHub
  - Jenkins
@@ -107,7 +93,29 @@
 
 ## 구조도
 
----
-
 - 메인 구조
     ![Untitled](https://user-images.githubusercontent.com/2987059/240445513-68c778ed-5ec2-480f-a002-77be72aa39ad.PNG)
+    
+ 
+## 작동 캡쳐
+
+- 로그인 이후 메인 화면
+    ![MyHome_Main](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/6ed19181-43d1-43ca-be79-573508770966)
+    
+- 로그인 이후 메인 화면 - 2
+    ![MyHome_Main2](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/7abe9dcd-4312-428e-8008-0396925cde25)
+    
+- Cloud 페이지 (공용폴더)
+    ![MyHome_Cloud](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/17c6135f-5833-458e-911a-7e35409d001e)
+    
+- Cloud 페이지 (이미지 클릭시)
+    ![MyHome_Cloud_img](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/74dbe83b-7c35-458a-a900-90f6e4457570)
+    
+- Cloud 페이지 (영상 클릭시)
+    ![MyHome_Cloud](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/17c6135f-5833-458e-911a-7e35409d001e)
+    
+- Cloud 페이지 (여러 파일들 선택 - 다운로드 가능)
+    ![MyHome_Cloud_select](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/5ecc7a8e-f4c0-4236-9805-9cecf5e337b6)
+    
+- Cloud 페이지 (업로드)
+    ![MyHome_Cloud_upload](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/3adf951c-925f-4a21-9e2b-b986da1139e1)
