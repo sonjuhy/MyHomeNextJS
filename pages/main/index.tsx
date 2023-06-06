@@ -3,6 +3,7 @@ import NavBar from '@/components/navbar/NavBar';
 import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
 import MainPage from '@/components/pageComponents/main/mainPage';
+import CloudPage from '@/components/pageComponents/cloud/cloudPage';
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import UserIcon from '/public/image/icon/user-white.png';
@@ -14,7 +15,15 @@ import { useEffect, useState } from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import Link from 'next/link';
 
-
+interface User {
+    userId: number;
+    id: string;
+    name: string;
+    password: string;
+    accessToken: string;
+    refreshToken: string;
+    auth: string;
+}
 
 export default function Main() {
     const [userName, setUserName] = useState('');
@@ -37,8 +46,8 @@ export default function Main() {
                     console.log("Auth is validated");
                     setVisible(true);
                     GetUserInfo(accessToken)
-                        .then((name) => {
-                            setUserName(name);
+                        .then((data: User) => {
+                            setUserName(data.name);
                         })
                         .catch();
                 })
@@ -100,7 +109,7 @@ export default function Main() {
                             <div>Weather</div>
                         )}
                         {category === 'cloud' && (
-                            <div>Cloud</div>
+                            <CloudPage/>
                         )}
                         {category === 'notice' && (
                             <div>Notice</div>

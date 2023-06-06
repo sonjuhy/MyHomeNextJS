@@ -20,7 +20,7 @@ export default function SignIn() {
     async function signIn(email: string, password: string){
         console.log('signing in : ' + email);
         const data = await axios.request({
-            url: process.env.BASE_URL+'/auth/signIn',
+            url: '/auth/signIn',
             method: 'POST',
             data:{
                 userId: 0,
