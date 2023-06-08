@@ -4,6 +4,7 @@ import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
 import MainPage from '@/components/pageComponents/main/mainPage';
 import CloudPage from '@/components/pageComponents/cloud/cloudPage';
+import CloudTrashPage from '@/components/pageComponents/cloud/cloudTrashPage';
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import UserIcon from '/public/image/icon/user-white.png';
@@ -97,6 +98,9 @@ export default function Main() {
                         <div className={category === 'light' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('light')}}>Light</div>
                         <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('weather')}}>Weather</div>
                         <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('cloud')}}>Cloud</div>
+                        {(category === 'cloud' || category === 'cloudTrash') && (
+                            <div className={`${styles.selectedSubMenu}`} onClick={()=>{setCategory("cloudTrash")}}>Cloud Trash</div>
+                        )}
                     </div>
                     <div>
                         {category === 'home' && (
@@ -110,6 +114,9 @@ export default function Main() {
                         )}
                         {category === 'cloud' && (
                             <CloudPage/>
+                        )}
+                        {category === 'cloudTrash' && (
+                            <CloudTrashPage/>
                         )}
                         {category === 'notice' && (
                             <div>Notice</div>

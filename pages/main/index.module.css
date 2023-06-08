@@ -42,6 +42,14 @@
     text-decoration: none;
     cursor: pointer;
 }
+.selectedSubMenu {
+    background-color: #3f49ff;
+    display: block;
+    color: white;
+    padding: 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
 
 .content {
     margin-left: 12vw;
