@@ -3,6 +3,8 @@ import NavBar from '@/components/navbar/NavBar';
 import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
 import MainPage from '@/components/pageComponents/main/mainPage';
+import CloudPage from '@/components/pageComponents/cloud/cloudPage';
+import CloudTrashPage from '@/components/pageComponents/cloud/cloudTrashPage';
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import UserIcon from '/public/image/icon/user-white.png';
@@ -14,7 +16,15 @@ import { useEffect, useState } from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import Link from 'next/link';
 
-
+interface User {
+    userId: number;
+    id: string;
+    name: string;
+    password: string;
+    accessToken: string;
+    refreshToken: string;
+    auth: string;
+}
 
 export default function Main() {
     const [userName, setUserName] = useState('');
@@ -37,8 +47,8 @@ export default function Main() {
                     console.log("Auth is validated");
                     setVisible(true);
                     GetUserInfo(accessToken)
-                        .then((name) => {
-                            setUserName(name);
+                        .then((data: User) => {
+                            setUserName(data.name);
                         })
                         .catch();
                 })
@@ -88,6 +98,9 @@ export default function Main() {
                         <div className={category === 'light' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('light')}}>Light</div>
                         <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('weather')}}>Weather</div>
                         <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('cloud')}}>Cloud</div>
+                        {(category === 'cloud' || category === 'cloudTrash') && (
+                            <div className={`${styles.selectedSubMenu}`} onClick={()=>{setCategory("cloudTrash")}}>Cloud Trash</div>
+                        )}
                     </div>
                     <div>
                         {category === 'home' && (
@@ -100,7 +113,10 @@ export default function Main() {
                             <div>Weather</div>
                         )}
                         {category === 'cloud' && (
-                            <div>Cloud</div>
+                            <CloudPage/>
+                        )}
+                        {category === 'cloudTrash' && (
+                            <CloudTrashPage/>
                         )}
                         {category === 'notice' && (
                             <div>Notice</div>
