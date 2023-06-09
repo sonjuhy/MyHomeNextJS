@@ -3,6 +3,7 @@ import NavBar from '@/components/navbar/NavBar';
 import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
 import MainPage from '@/components/pageComponents/main/mainPage';
+import NoticePage from '@/components/pageComponents/notice/noticePage';
 import CloudPage from '@/components/pageComponents/cloud/cloudPage';
 import CloudTrashPage from '@/components/pageComponents/cloud/cloudTrashPage';
 
@@ -119,7 +120,7 @@ export default function Main() {
                             <CloudTrashPage/>
                         )}
                         {category === 'notice' && (
-                            <div>Notice</div>
+                            <NoticePage/>
                         )}
                     </div>
                 </div>
