@@ -56,7 +56,7 @@ export default function Main() {
 
 
     async function getFileList(mode:string) {
-        const link = mode ==='private' ? 'getPrivateTrashFiles' : 'getPublicTrashFiles'; // for test
+        const link = mode ==='private' ? 'getPrivateTrashFiles' : 'getPublicTrashFiles'; // need to change findByLocation like cloudPage
         setPlace(location);
         const list:any = await axios.request({
             url: '/file/'+link,
@@ -234,7 +234,7 @@ export default function Main() {
                                             className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
                                             onClick={(key) => 
                                             {itemSelect(publicFileList[index].uuid, publicFileList[index].name, publicFileList[index].type)}}>
-                                                <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={'file'} path={publicFileList[index].path} mode={'public'}/>
+                                                <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={publicFileList[index].type === 'dir' ? 'dir' : 'file'} path={publicFileList[index].path} mode={'public'}/>
                                             </div>
                                         </Container>
                                     </Col>
@@ -261,7 +261,7 @@ export default function Main() {
                                             className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
                                             onClick={(key) => 
                                             {itemSelect(privateFileList[index].uuid, privateFileList[index].name, privateFileList[index].type)}}>
-                                                <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={'file'} path={privateFileList[index].path} mode={'private'}/>
+                                                <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={privateFileList[index].type === 'dir' ? 'dir' : 'file'} path={privateFileList[index].path} mode={'private'}/>
                                             </div>
                                         </Container>
                                     </Col>
