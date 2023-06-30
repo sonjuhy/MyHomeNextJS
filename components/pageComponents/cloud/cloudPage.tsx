@@ -63,7 +63,9 @@ export default function Main() {
     async function getFileList(mode:string) {
         const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(location) : 'getPublicFilesInfo/?location='+encodeURI(location); // for test
         setPlace(location);
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         const list:any = await axios.request({
+            headers: {'Authorization': 'Bearer ' + accessToken},
             url: '/file/'+link,
             method: 'GET',
         });
@@ -274,10 +276,10 @@ export default function Main() {
                 if (accessToken !== null) {
                     for(var idx in selectedFileList){
                         await axios.request({
-                            url: '/file/deletePrivateFileToTrash/?uuid=',
+                            url: '/file/deletePrivateFileToTrash/',
                             method: 'DELETE',
-                            data:{
-                                path: selectedFileList[idx].uuid,
+                            params:{
+                                uuid: selectedFileList[idx].uuid,
                                 accessToken: accessToken,
                             }
                         });
