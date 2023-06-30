@@ -43,7 +43,7 @@ export default function Main() {
     async function userPermissionCheck() {
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         if (accessToken !== null) {
-            AuthValidate(accessToken)
+            AuthValidate()
                 .then(() => {
                     console.log("Auth is validated");
                     setVisible(true);

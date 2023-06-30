@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import axios from 'axios';
+import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
 function ImgOverlayExample() {
     const [weather, setWeather] = useState('맑음');
@@ -20,17 +21,25 @@ function ImgOverlayExample() {
     
 
     async function getVilageFcst(){
-      const data = await axios.request({
-        url: process.env.BASE_URL+'/weather/getVilageFcst',
-        method: 'POST',
-        data:{
-          name: '',
-          code: '',
-          x_code: 91,
-          y_code: 76
-        }
-      });
-      var weatherInfo = data.data[0];
+      const bodyData={
+        name: '',
+        code: '',
+        x_code: 91,
+        y_code: 76
+      }
+      const response = await sendToSpring('/weather/getVilageFcst', 'POST', bodyData, '');
+      // const data = await axios.request({
+      //   url: process.env.BASE_URL+'/weather/getVilageFcst',
+      //   method: 'POST',
+      //   data:{
+      //     name: '',
+      //     code: '',
+      //     x_code: 91,
+      //     y_code: 76
+      //   }
+      // });
+      var weatherInfos:any = response.data;
+      var weatherInfo = weatherInfos[0];
       setTemperature(weatherInfo.t1H);
       var pty = weatherInfo.pty;
       if(weatherInfo.lgt !== null){
@@ -64,7 +73,6 @@ function ImgOverlayExample() {
         
       }
       setTime(weatherInfo.fcstTime+' 기준');
-      console.log(data);
     }
 
     useEffect(() => {

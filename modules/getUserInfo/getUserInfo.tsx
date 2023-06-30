@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+import sendToSpring from '../sendToSpring/sendToSpring';
 
 interface User {
     userId: number;
@@ -12,12 +13,9 @@ interface User {
 }
 
 export default async function GetUserInfo(token: string): Promise<User> {
-    const data = await axios.request({
-        url: process.env.BASE_URL+"/auth/getUserInfo/"+token,
-        method: "GET",
-    })
-    if(data.status === 200) {
-        var userInfo = data.data;
+    const response = await sendToSpring('/auth/getUserInfo/'+token, 'GET','','');
+    if(response.result === 200) {
+        var userInfo:any = response.data;
         return Promise.resolve(userInfo);
     }
     else{

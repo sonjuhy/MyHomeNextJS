@@ -7,6 +7,7 @@ import LightOffIcon from '/public/image/icon/light-off-cardview.png';
 import LightOnIcon from '/public/image/icon/light-on-cardview.png';
 import { Col, Row, Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import axios from 'axios';
+import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
 interface Room {
     name: string;
@@ -20,10 +21,11 @@ function WithHeaderStyledExample(): JSX.Element {
     const [roomList, setRoomList] = useState<Room[]>([]);
 
     async function getLightList(){
-        const list:any = await axios.request({
-            url: process.env.BASE_URL+'/light/getAllList',
-            method: 'GET'
-        });
+        const list:any = await sendToSpring('/light/getAllList', 'GET','','');
+        // const list:any = await axios.request({
+        //     url: process.env.BASE_URL+'/light/getAllList',
+        //     method: 'GET'
+        // });
         
         var room_list: Room[] = [];
 
@@ -42,18 +44,26 @@ function WithHeaderStyledExample(): JSX.Element {
     }
     // use axios connection to server(GET) and control iot
     async function lightControl (room: Room){
-        var accessToken = sessionStorage.getItem('accessToken');
-        const data:any = await axios.request({
-            url: process.env.BASE_URL+'/light/control/'+accessToken,
-            method: 'POST',
-            data:{
-                room: room.name,
-                kor: room.krName,
-                category: room.category,
-                state: room.status,
-                connect: room.connect
-            }
-        });
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+        const bodyData = {
+            room: room.name,
+            kor: room.krName,
+            category: room.category,
+            state: room.status,
+            connect: room.connect
+        }
+        const response  = await sendToSpring('/light/control/'+accessToken, 'POST', bodyData, '');
+        // const data:any = await axios.request({
+        //     url: process.env.BASE_URL+'/light/control/'+accessToken,
+        //     method: 'POST',
+        //     data:{
+        //         room: room.name,
+        //         kor: room.krName,
+        //         category: room.category,
+        //         state: room.status,
+        //         connect: room.connect
+        //     }
+        // });
         setTimeout(getLightList, 500);
     }
     useEffect(()=>{
