@@ -21,9 +21,9 @@ export default function Home() {
   const router = useRouter();
 
   async function userPermissionCheck() {
-    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-    if (accessToken !== null) {
-      AuthValidate(accessToken)
+    console.log(typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') !== null ? true: false : false);
+    if(typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') !== null ? true: false : false){
+      AuthValidate()
       .then(()=>{        
         setSign(true);
         router.push('/main');
