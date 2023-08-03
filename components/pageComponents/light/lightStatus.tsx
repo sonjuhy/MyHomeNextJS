@@ -5,6 +5,7 @@ import Image from 'next/image';
 import OffImage from '/public/image/icon/light-off-cardview.png'
 import OnImage from '/public/image/icon/light-on-cardview.png';
 import Disconnection from '/public/image/icon/disconnection.png';
+import RecordIcon from '/public/image/icon/record_list.png';
 
 import {Card, Col, Container, Form, Row, Stack} from 'react-bootstrap';
 
@@ -21,6 +22,7 @@ interface roomInfo{
 export default function lightStatus({roomData}:props):JSX.Element {
     const [status, setStatus]  = useState(false);
     const [connection, setConnection] = useState(false);
+    const [infoStatus, setInfoStatus] = useState(true);
 
     const changeStatus = async () => {
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
@@ -40,6 +42,9 @@ export default function lightStatus({roomData}:props):JSX.Element {
    useEffect(() => {
     roomData.state === 'Off' ? setStatus(false) : setStatus(true);
     roomData.connect === 'Off' ? setConnection(false) : setConnection(true);
+    if(roomData !== null){
+        setInfoStatus(false);
+    }
    },[roomData]);
     return (
         <div>
@@ -82,6 +87,7 @@ export default function lightStatus({roomData}:props):JSX.Element {
                                         <Form.Check
                                             type="switch"
                                             checked={status}
+                                            disabled={infoStatus}
                                             onChange={()=>{console.log('Check');}}
                                         />
                                     </Form>
@@ -95,17 +101,16 @@ export default function lightStatus({roomData}:props):JSX.Element {
                     <Col sm={6} md={3} lg={3}>
                         <Card className="shadow" style={{height:'12rem'}}>
                         <Card.Body>
-                                <Card.Title className="text-center">상태</Card.Title>
-                                <div style={{justifyContent:'center', display:'flex'}}>
-
+                                <Card.Title className="text-center">기록</Card.Title>
+                                <div style={{justifyContent:'center', display:'flex', cursor:'pointer'}}>
+                                    <Image
+                                    alt='status image'
+                                    src={RecordIcon}
+                                    width={'80'}
+                                    height={'80'}
+                                    />
                                 </div>
-                                <Image
-                                alt='status image'
-                                src={OffImage}
-                                width={'80'}
-                                height={'80'}
-                                />
-                                <Card.Text className="text-center" style={{fontSize:'1rem'}}>꺼저있습니다.</Card.Text>
+                                <Card.Text className="text-center" style={{fontSize:'1rem'}}>최근 기록을 살펴봅니다.</Card.Text>
                             </Card.Body>
                         </Card>
                     </Col>

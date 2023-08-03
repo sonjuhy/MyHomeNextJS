@@ -1,5 +1,6 @@
 import LightSelector from "./lightSelector";
 import LightStatus from "./lightStatus";
+import LightReserve from "./lightReserve";
 import { useEffect, useState } from "react";
 import Image from 'next/image';
 
@@ -52,6 +53,8 @@ export default function Main() {
                 <LightSelector setRoom={setRoomInfo}/>
                 <br/>
                 <LightStatus roomData={room}/>
+                <br/>
+                <LightReserve room={room.room}/>
             </div>
             <style jsx>{`
             .content {
