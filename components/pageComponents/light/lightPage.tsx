@@ -48,7 +48,7 @@ export default function Main() {
             </ToastContainer>
             <div className='content'>
                 <br/>
-                <h1>Light</h1>
+                <h1>Light (Experience)</h1>
                 <br/>
                 <LightSelector setRoom={setRoomInfo}/>
                 <br/>
