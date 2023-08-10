@@ -20,7 +20,7 @@ export default function Main({selectMenu}:props) {
                     <CardWeather/>
                 </div>
                 <h1>Light Control</h1>
-                <CardLight/>
+                    <CardLight/>
                 <h1></h1>
             </div>
             <style jsx>{`

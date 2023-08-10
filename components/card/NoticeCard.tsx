@@ -1,3 +1,4 @@
+import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
@@ -8,11 +9,8 @@ function WithHeaderAndQuoteExample() {
     const [writer, setWriter] = useState('writer');
     
     async function getLastNotice(){
-      const data:any = await axios.request({
-        url : process.env.BASE_URL+'/notice/getTopNotice',
-        method: 'GET',
-      })
-      var notice = data.data;
+      const response = await sendToSpring('/notice/getTopNotice', 'GET', '','');
+      var notice:any = response.data;
       setTitle(notice.title);
       setContent(notice.content);
       setWriter(notice.writer);

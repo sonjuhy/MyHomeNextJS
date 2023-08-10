@@ -3,6 +3,8 @@ import NavBar from '@/components/navbar/NavBar';
 import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
 import MainPage from '@/components/pageComponents/main/mainPage';
+import NoticePage from '@/components/pageComponents/notice/noticePage';
+import LightPage from '@/components/pageComponents/light/lightPage';
 import CloudPage from '@/components/pageComponents/cloud/cloudPage';
 import CloudTrashPage from '@/components/pageComponents/cloud/cloudTrashPage';
 
@@ -42,7 +44,7 @@ export default function Main() {
     async function userPermissionCheck() {
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         if (accessToken !== null) {
-            AuthValidate(accessToken)
+            AuthValidate()
                 .then(() => {
                     console.log("Auth is validated");
                     setVisible(true);
@@ -107,7 +109,7 @@ export default function Main() {
                             <MainPage selectMenu={selectedCategory}/>
                         )}
                         {category === 'light' && (
-                            <div>Light</div>
+                            <LightPage/>
                         )}
                         {category === 'weather' && (
                             <div>Weather</div>
@@ -119,7 +121,7 @@ export default function Main() {
                             <CloudTrashPage/>
                         )}
                         {category === 'notice' && (
-                            <div>Notice</div>
+                            <NoticePage/>
                         )}
                     </div>
                 </div>
