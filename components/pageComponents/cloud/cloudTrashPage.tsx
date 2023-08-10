@@ -28,7 +28,7 @@ interface User {
     auth: string;
 }
 
-let defaultPublicLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\public\\';
+let defaultPublicLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\trash\\';
 let defaultPrivateLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\private\\';
 
 export default function Main() {
@@ -43,12 +43,6 @@ export default function Main() {
     
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [imageModalVisible, setImageModalVisible] = useState(false);
-    const [uploadModalVisible, setUploadModalVisible] = useState(false);
-    const [mkdirModalVisible, setMkdirModalVisible] = useState(false);
-    const [fileUUID, setFileUUID] = useState('');
-    const [selectFileType, setSelectFileType] = useState('');
-    const [selectFileName, setSelectFileName] = useState('');
     const [nowPath, setNowPath] = useState('');
     
     var imageExtension = ['bmp', 'png', 'gif', 'jpg', 'jpeg', 'pnm'];
@@ -56,13 +50,15 @@ export default function Main() {
 
 
     async function getFileList(mode:string) {
-        const link = mode ==='private' ? 'getPrivateTrashFiles' : 'getPublicTrashFiles'; // for test
+        const link = mode ==='private' ? 'getPrivateTrashFiles/?location='+encodeURI(location) : 'getPublicTrashFiles/?location='+encodeURI(location); // need to change findByLocation like cloudPage
         setPlace(location);
+        console.log(link);
         const list:any = await axios.request({
             url: '/file/'+link,
             method: 'GET',
         });
         var tmpList: File[] = [];
+        console.log(list.data);
         for(const idx in list.data){
 
             var tmpType = '';
@@ -126,10 +122,15 @@ export default function Main() {
             getFileList('public');
         }
         else{
+            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
             for(var idx in selectedFileList){
                 await axios.request({
-                    url: '/file/deletePrivateFileInfo/'+selectedFileList[idx].path,
+                    url: '/file/deletePrivateFileInfo/',
                     method: 'DELETE',
+                    data:{
+                        path:selectedFileList[idx].path,
+                        accessToken: accessToken,
+                    }
                 });
             }
             getFileList('private');
@@ -139,24 +140,41 @@ export default function Main() {
 
     const restoreFile = async () => {
         if(stageMode === 'public'){
-            for(var idx in selectedFileList){
-                await axios.request({
-                    url: '/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid,
-                    method: 'PUT',
-                });
+            if(nowPath === defaultPublicLocation){
+                for(var idx in selectedFileList){
+                    await axios.request({
+                        url: '/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid,
+                        method: 'PUT',
+                    });
+                }
+                getFileList('public');
             }
-            getFileList('public');
+            else{
+                setErrorMessage("최상위 폴더에 있는 내용만 복원 가능합니다.");
+                setErrorToast(!errorToast);
+            }
         }
         else{
-            for(var idx in selectedFileList){
-                await axios.request({
-                    url: '/file/restorePrivateFile/?uuid='+selectedFileList[idx].uuid,
-                    method: 'PUT',
-                });
+            if(nowPath === defaultPrivateLocation){
+                const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+                for(var idx in selectedFileList){
+                    await axios.request({
+                        url: '/file/restorePrivateFile/?uuid=',
+                        method: 'PUT',
+                        data:{
+                            uuid:selectedFileList[idx].uuid,
+                            accessToken:accessToken,
+                        }
+                    });
+                }
+                getFileList('private');
+                setSelectFileList([]);
             }
-            getFileList('private');
-        }
-        setSelectFileList([]);
+            else{
+                setErrorMessage("최상위 폴더에 있는 내용만 복원 가능합니다.");
+                setErrorToast(!errorToast);
+            }
+        }        
     }
 
     useEffect(() => {
@@ -184,7 +202,8 @@ export default function Main() {
         if(stageMode === 'public') {
             getFileList('public');
             var path = location.split(defaultPublicLocation)[1];
-            if(path !== '') setNowPath(path.replace('\\', '-'));
+            setNowPath(path);
+            // if(path !== '') setNowPath(path.replace('\\', '-'));
         }
         else{
             const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
@@ -234,7 +253,7 @@ export default function Main() {
                                             className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
                                             onClick={(key) => 
                                             {itemSelect(publicFileList[index].uuid, publicFileList[index].name, publicFileList[index].type)}}>
-                                                <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={'file'} path={publicFileList[index].path} mode={'public'}/>
+                                                <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={publicFileList[index].type === 'dir' ? 'dir' : 'file'} path={publicFileList[index].path} mode={'public'}/>
                                             </div>
                                         </Container>
                                     </Col>
@@ -261,7 +280,7 @@ export default function Main() {
                                             className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
                                             onClick={(key) => 
                                             {itemSelect(privateFileList[index].uuid, privateFileList[index].name, privateFileList[index].type)}}>
-                                                <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={'file'} path={privateFileList[index].path} mode={'private'}/>
+                                                <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={privateFileList[index].type === 'dir' ? 'dir' : 'file'} path={privateFileList[index].path} mode={'private'}/>
                                             </div>
                                         </Container>
                                     </Col>

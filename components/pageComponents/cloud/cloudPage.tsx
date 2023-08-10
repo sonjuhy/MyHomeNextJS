@@ -4,6 +4,7 @@ import CardCloud from '@/components/card/CloudCard';
 import ImageModal from '@/components/modal/ImageModal';
 import UploadModal from '@/components/modal/UploadModal';
 import MkdirModal from '@/components/modal/MkdirModal';
+import MoveFileModal from '@/components/modal/MoveFileModal';
 
 import axios from 'axios';
 import { useEffect, useState } from "react";
@@ -49,6 +50,7 @@ export default function Main() {
     const [imageModalVisible, setImageModalVisible] = useState(false);
     const [uploadModalVisible, setUploadModalVisible] = useState(false);
     const [mkdirModalVisible, setMkdirModalVisible] = useState(false);
+    const [moveModalVisible, setMoveModalVisible] = useState(false);
     const [fileUUID, setFileUUID] = useState('');
     const [selectFileType, setSelectFileType] = useState('');
     const [selectFileName, setSelectFileName] = useState('');
@@ -61,7 +63,9 @@ export default function Main() {
     async function getFileList(mode:string) {
         const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(location) : 'getPublicFilesInfo/?location='+encodeURI(location); // for test
         setPlace(location);
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         const list:any = await axios.request({
+            headers: {'Authorization': 'Bearer ' + accessToken},
             url: '/file/'+link,
             method: 'GET',
         });
@@ -142,111 +146,154 @@ export default function Main() {
     }
 
     function itemSelect(uuid: string, name: string, type: string){
-        let object = {
-            uuid: uuid,
-            path: location,
-            name: name,
-            type: type,
-            size: 0
-        }
-        if(selectedFileList.findIndex(e => e.uuid === uuid) !== -1){
-            setSelectFileList(selectedFileList.filter(e => e.uuid !== uuid))
+        if(type === 'up'){
+            setErrorMessage("위로 가기는 선택 할 수 없습니다.");
+            setErrorToast(true);
         }
         else{
-            setSelectFileList(selectedFileList => [...selectedFileList, object])
+            let object = {
+                uuid: uuid,
+                path: location,
+                name: name,
+                type: type,
+                size: 0
+            }
+            if(selectedFileList.findIndex(e => e.uuid === uuid) !== -1){
+                setSelectFileList(selectedFileList.filter(e => e.uuid !== uuid))
+            }
+            else{
+                setSelectFileList(selectedFileList => [...selectedFileList, object])
+            }
         }
     }
 
     async function DownloadFile(){
-        var dirCheck = true;
-        for(var idx in selectedFileList){
-            if(selectedFileList[idx].type === 'dir'){
-                dirCheck = false;
-                break;
-            }
-        }
-        if(dirCheck){
-            var tmpUrl = '';
-            if(stageMode == 'public') {
-                tmpUrl = '/file/downloadPublicFile';
-            }
-            else{
-                tmpUrl = '/file/downloadPrivateFile';
-            }
-            for(var idx in selectedFileList){
-                await axios({
-                    method: 'POST',
-                    url: process.env.BASE_URL+tmpUrl,
-                    responseType: 'blob',  // Set the response type to 'blob' to handle binary data
-                    data:{
-                    path: '',
-                    name: 'download',
-                    uuidName: selectedFileList[idx].uuid,
-                    type: 'file',
-                    size: 0,
-                    location: '',
-                    state: 0,
-                    },
-                })
-                .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', selectedFileList[idx].name); // Set the desired filename and extension
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                })
-                .catch((error) => {
-                console.error('Error downloading file:', error);
-                });
-                setDownloadMode(false);
-                setSelectFileList([]);
-            }
-        }
-        else{
-            setErrorMessage("폴더는 다운로드 받을 수 없습니다.");
+        if(selectedFileList.length <= 0){
+            setErrorMessage("선택한 파일이 없습니다.");
             setErrorToast(true);
         }
-        
+        else{
+            var dirCheck = true;
+            for(var idx in selectedFileList){
+                if(selectedFileList[idx].type === 'dir'){
+                    dirCheck = false;
+                    break;
+                }
+            }
+            if(dirCheck){
+                var tmpUrl = '';
+                if(stageMode == 'public') {
+                    tmpUrl = '/file/downloadPublicFile';
+                }
+                else{
+                    tmpUrl = '/file/downloadPrivateFile';
+                }
+                for(var idx in selectedFileList){
+                    await axios({
+                        method: 'POST',
+                        url: process.env.BASE_URL+tmpUrl,
+                        responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+                        data:{
+                        path: '',
+                        name: 'download',
+                        uuidName: selectedFileList[idx].uuid,
+                        type: 'file',
+                        size: 0,
+                        location: '',
+                        state: 0,
+                        },
+                    })
+                    .then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', selectedFileList[idx].name); // Set the desired filename and extension
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    })
+                    .catch((error) => {
+                    console.error('Error downloading file:', error);
+                    });
+                    setDownloadMode(false);
+                    setSelectFileList([]);
+                }
+            }
+            else{
+                setErrorMessage("폴더는 다운로드 받을 수 없습니다.");
+                setErrorToast(true);
+            }
+        }
     }
 
-    const clickImageModel = () => {
+    function MoveModalVisible(){
+        if(selectedFileList.length <= 0){
+            setErrorMessage("선택한 파일이 없습니다.");
+            setErrorToast(true);
+        }
+        else{
+            setMoveModalVisible(true);
+        }
+    }
+
+    const clickImageModal = () => {
         setImageModalVisible(!imageModalVisible);
         return imageModalVisible;
     };
-    const clickMkdirModel = () => {
+    const clickMkdirModal = () => {
         setMkdirModalVisible(!mkdirModalVisible);
         getFileList(stageMode);
         return mkdirModalVisible;
     };
-    const clickUploadModel = () => {
+    const clickUploadModal = () => {
         setUploadModalVisible(!uploadModalVisible);
         getFileList(stageMode);
         return uploadModalVisible;
     };
+    const clickMoveModal = (result:boolean) => {
+        setMoveModalVisible(!moveModalVisible);
+        if(result) getFileList(stageMode);
+        return moveModalVisible;
+    }
 
     const removeFile = async() => {
-        if(stageMode === 'public'){
-            for(var idx in selectedFileList){
-                await axios.request({
-                    url: '/file/deletePublicFileToTrash/?uuid='+selectedFileList[idx].uuid,
-                    method: 'DELETE',
-                });
-            }
-            getFileList('public');
+        if(selectedFileList.length <= 0){
+            setErrorMessage("선택한 파일이 없습니다.");
+            setErrorToast(true);
         }
         else{
-            for(var idx in selectedFileList){
-                await axios.request({
-                    url: '/file/deletePrivateFileToTrash/?uuid='+selectedFileList[idx].uuid,
-                    method: 'DELETE',
-                });
+            if(stageMode === 'public'){
+                for(var idx in selectedFileList){
+                    await axios.request({
+                        url: '/file/deletePublicFileToTrash/?uuid='+selectedFileList[idx].uuid,
+                        method: 'DELETE',
+                    });
+                }
+                getFileList('public');
             }
-            getFileList('private');
+            else{
+                const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+                if (accessToken !== null) {
+                    for(var idx in selectedFileList){
+                        await axios.request({
+                            url: '/file/deletePrivateFileToTrash/',
+                            method: 'DELETE',
+                            params:{
+                                uuid: selectedFileList[idx].uuid,
+                                accessToken: accessToken,
+                            }
+                        });
+                    }
+                    getFileList('private');
+                }
+                else{
+                    setErrorMessage("유저 정보가 없습니다. 다시 로그인 해주세요.");
+                    setErrorToast(true);
+                }
+            }
+            setDownloadMode(false);
+            setSelectFileList([]);
         }
-        setDownloadMode(false);
-        setSelectFileList([]);
     };
 
     useEffect(() => {
@@ -303,9 +350,10 @@ export default function Main() {
                     <Toast.Body>{errorMessage}</Toast.Body>
                 </Toast>
             </ToastContainer>
-            <ImageModal click={clickImageModel} status={imageModalVisible} info={fileUUID} mode={stageMode} type={selectFileType} name={selectFileName}/>
-            <UploadModal click={clickUploadModel} status={uploadModalVisible} mode={stageMode} path={place} location={location}/>
-            <MkdirModal click={clickMkdirModel} status={mkdirModalVisible} mode={stageMode} path={location} fileList={stageMode === 'public' ? publicFileList : privateFileList}/>
+            <ImageModal click={clickImageModal} status={imageModalVisible} info={fileUUID} mode={stageMode} type={selectFileType} name={selectFileName}/>
+            <UploadModal click={clickUploadModal} status={uploadModalVisible} mode={stageMode} path={place} location={location}/>
+            <MkdirModal click={clickMkdirModal} status={mkdirModalVisible} mode={stageMode} path={location} fileList={stageMode === 'public' ? publicFileList : privateFileList}/>
+            <MoveFileModal click={(result:boolean) => clickMoveModal(result)} status={moveModalVisible} mode={stageMode} location={location} selectedFileList={selectedFileList}/>
             <div className='content'>
                 <br/>
                 <h1>Cloud</h1>
@@ -320,6 +368,7 @@ export default function Main() {
                     {downloadMode && (
                         <div>
                             <Button className='btn-content' variant="success" style={{marginRight:'1rem'}} onClick={DownloadFile}>다운로드</Button>
+                            <Button className='btn-content' variant="success" style={{marginRight:'1rem'}} onClick={MoveModalVisible}>이동</Button>
                             <Button className='btn-content' variant="danger" style={{marginRight:'1rem'}} onClick={removeFile}>삭제</Button>
                             <Button className='btn-content' variant="warning" onClick={()=>{
                                 setDownloadMode(false);
