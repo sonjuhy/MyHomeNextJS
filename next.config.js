@@ -3,13 +3,13 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: false,
   env: {
-    BASE_URL: '',
+    BASE_URL: process.env.SERVER_ADDRESS,
   },
   async rewrites(){
     return[
       {
         source: '/:path*',
-        destination: 'http://192.168.0.18:8080/:path*',
+        destination: process.env.SERVER_ADDRESS+'/:path*',
       },
     ];
   },
