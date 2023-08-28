@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: false,
   env: {
-    // BASE_URL: 'http://localhost:8080',
     BASE_URL: '',
   },
   async rewrites(){
@@ -13,9 +13,6 @@ const nextConfig = {
       },
     ];
   },
-  // image: {
-  //   domains: ['http://localhost:8080/file']
-  // },
 }
 
 module.exports = nextConfig
