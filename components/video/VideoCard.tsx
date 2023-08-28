@@ -21,7 +21,7 @@ type Props = {
 
 {/* <VideoLoader url={'localhost:8080'} uuid={'c668fe69-e3aa-463d-9d93-4534e8f8ecb6'}/> */}
 
-export default function loadVideo({url, uuid}:Props): JSX.Element{
+export default function LoadVideo({url, uuid}:Props): JSX.Element{
     // console.log(url);
     let uuid_name:string = uuid;
     const [isWindow, setIsWindow] = useState<boolean>(false);
@@ -75,7 +75,7 @@ export default function loadVideo({url, uuid}:Props): JSX.Element{
             <Card.Title>Card Title</Card.Title>
             <Card.Text>
             Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+            bulk of the card`&apos;`s content.
             </Card.Text>
             <Button variant="primary">Go somewhere</Button>
         </Card.Body>

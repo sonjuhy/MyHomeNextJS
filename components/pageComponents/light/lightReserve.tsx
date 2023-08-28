@@ -15,7 +15,7 @@ type props = {
     room: string;
 }
 
-export default function lightSelector({room}:props):JSX.Element {
+export default function LightSelector({room}:props):JSX.Element {
     const [modalVisible, setModalVisible] = useState(false);
     const [reservationStatus, setReservationStatus] = useState(false);
     const [reservationList, setReservationList] = useState([]);

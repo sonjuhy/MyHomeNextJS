@@ -40,8 +40,9 @@ function ImgOverlayExample() {
       // });
       var weatherInfos:any = response.data;
       var weatherInfo = weatherInfos[0];
-      setTemperature(weatherInfo.t1H);
-      var pty = weatherInfo.pty;
+      if(weatherInfo !== null && weatherInfo !== undefined) {
+        setTemperature(weatherInfo.t1H);
+        var pty = weatherInfo.pty;
       if(weatherInfo.lgt !== null){
         pty = '번개';
       }
@@ -73,6 +74,8 @@ function ImgOverlayExample() {
         
       }
       setTime(weatherInfo.fcstTime+' 기준');
+      }
+      
     }
 
     useEffect(() => {
