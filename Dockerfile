@@ -39,6 +39,10 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+
+ARG SERVER_ADDRESS
+ENV SERVER_ADDRESS=$SERVER_ADDRESS
+
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
