@@ -14,7 +14,7 @@ interface roomInfo{
     category: string;
     connect: string;
 }
-export default function lightRecord({room}:props):JSX.Element {
+export default function LightRecord({room}:props):JSX.Element {
 
    
     return (

@@ -16,7 +16,7 @@ function StaticExample({click, status, info}: ModalProps): JSX.Element {
         <Modal.Header closeButton>
           <Modal.Title>Modal heading</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you're reading this text in a modal! {info}</Modal.Body>
+        <Modal.Body>Woohoo, you`&apos;`re reading this text in a modal! {info}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={click}>
             Close
