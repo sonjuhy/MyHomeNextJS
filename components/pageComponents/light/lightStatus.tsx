@@ -19,7 +19,7 @@ interface roomInfo{
     category: string;
     connect: string;
 }
-export default function lightStatus({roomData}:props):JSX.Element {
+export default function LightStatus({roomData}:props):JSX.Element {
     const [status, setStatus]  = useState(false);
     const [connection, setConnection] = useState(false);
     const [infoStatus, setInfoStatus] = useState(true);

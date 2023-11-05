@@ -13,22 +13,22 @@ type propsForm = {
     signUp: Function;
 }
 
-const errorMsg = {
+const ErrorMsg = {
     empty: "아이디를 입력해주세요",
     exist_id: "이미 등록된 아이디입니다. 다른 아이디를 입력해주세요",
 };
 
-export default function form({signUp}: propsForm) {
+export default function SignUpForm({signUp}: propsForm) {
     const [user, setUser] = useState<User>({ name: "", id: "", password: "" });
 
-    const [errorId, setErrorId] = useState(errorMsg.empty);
+    const [errorId, setErrorId] = useState(ErrorMsg.empty);
 
     function handleName(e: React.ChangeEvent<HTMLInputElement>) {
         setUser({ ...user, name: e.target.value });
     }
 
     function handleId(e: React.ChangeEvent<HTMLInputElement>) {
-        setErrorId(errorMsg.empty);
+        setErrorId(ErrorMsg.empty);
         setUser({ ...user, id: e.target.value });
     }
 
@@ -52,7 +52,7 @@ export default function form({signUp}: propsForm) {
                         이름을 입력해주세요!(3글자 이상입력)
                     </Form.Control.Feedback>
                     <Form.Text className="text-muted">
-                        We'll never share your name with anyone else.
+                        We`&apos;`ll never share your name with anyone else.
                     </Form.Text>
                 </Form.Group>
 
