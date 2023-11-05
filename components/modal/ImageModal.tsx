@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
@@ -7,6 +7,7 @@ import Image from 'next/image';
 import axios from 'axios';
 
 import FileIcon from '/public/image/icon/file.png';
+import ErrorIcon from '/public/image/icon/error.png';
 
 type ModalProps = {
   click: () => boolean;
@@ -21,10 +22,32 @@ type loaderProps = {
 };
 export default function ImageModal({click, status, info, mode, type, name}: ModalProps): JSX.Element {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [imageSrc, setImageSrc] = useState('');
 
   const mediaPublicLoader = ({src}:loaderProps) =>{
     return process.env.BASE_URL+'/file/downloadPublicMedia/'+src;
   };
+
+  const getMediaPublicLoader = async (src:string) =>{
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    if (accessToken !== null) {
+      const imageUrl = process.env.BASE_URL+'/file/downloadPublicMedia/' + src; 
+      await axios({
+        headers: {'Authorization': accessToken},
+        method: 'GET',
+        url: imageUrl,
+        responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+      })
+      .then((response) => {
+          const blob = new Blob([response.data]);
+          const url = URL.createObjectURL(blob);
+          setImageSrc(url);
+      })
+      .catch((error) => {
+          console.error('Error downloading file:', error);
+      });
+    }
+  }
 
   const mediaPrivateLoader = ({src}:loaderProps) =>{
       return process.env.BASE_URL+'/file/downloadPrivateMedia/'+src;
@@ -37,40 +60,47 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
   
   async function DownloadFile(){
     console.log('DownloadFile : '+info);
-    var tmpUrl = '';
-    if(mode == 'public') {
-      tmpUrl = '/file/downloadPublicFile';
-    }
-    else{
-      tmpUrl = '/file/downloadPrivateFile';
-    }
-    await axios({
-      method: 'POST',
-      url: process.env.BASE_URL+tmpUrl,
-      responseType: 'blob',  // Set the response type to 'blob' to handle binary data
-      data:{
-        path: '',
-        name: 'download',
-        uuidName: info,
-        type: 'file',
-        size: 0,
-        location: '',
-        state: 0,
-      },
-    })
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', name); // Set the desired filename and extension
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;  
+    if (accessToken !== null) {
+      var tmpUrl = '';
+      if(mode == 'public') {
+        tmpUrl = '/file/downloadPublicFile';
+      }
+      else{
+        tmpUrl = '/file/downloadPrivateFile';
+      }
+      await axios({
+        method: 'POST',
+        url: process.env.BASE_URL+tmpUrl,
+        responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+        data:{
+          path: '',
+          name: 'download',
+          uuidName: info,
+          type: 'file',
+          size: 0,
+          location: '',
+          state: 0,
+        },
       })
-      .catch((error) => {
-        console.error('Error downloading file:', error);
-      });
+        .then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', name); // Set the desired filename and extension
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch((error) => {
+          console.error('Error downloading file:', error);
+        });
+    }
   }
+
+  useEffect(()=>{
+    getMediaPublicLoader(info);
+  });
 
   return (
     <div>
@@ -83,8 +113,9 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
           
           <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
             <Image
-              loader={mode === 'public' ? mediaPublicLoader : mediaPrivateLoader}
-              src={info}
+              // loader={mode === 'public' ? mediaPublicLoader : mediaPrivateLoader}
+              // src={info}
+              src={imageSrc === '' ? ErrorIcon : imageSrc }
               alt="cloud image"
               width={0}
               height={0}

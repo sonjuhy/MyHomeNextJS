@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { Form, ListGroup, Row, Toast, ToastContainer } from 'react-bootstrap';
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
+import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
 type ModalProps = {
     click: (result:boolean) => boolean;
@@ -64,13 +65,14 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
                 const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
                 data = {path: selectedFileList[idx].path+selectedFileList[idx].name, location: nowLocation, accessToken: accessToken};
             }
-            axios.get(tmpUrl,{
-                params:{
-                  data
-                }
-              }).catch(e =>{
-                console.log(e);
-              })
+            // axios.get(tmpUrl,{
+            //     params:{
+            //       data
+            //     }
+            //   }).catch(e =>{
+            //     console.log(e);
+            //   })
+            sendToSpring(tmpUrl, 'GET', '', data);
         }
         exit(true);
     }
@@ -110,12 +112,8 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
             setNowLocation(path);
         }
         const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(path) : 'getPublicFilesInfo/?location='+encodeURI(path); // for test
-        
-        const list:any = await axios.request({
-            url: '/file/'+link,
-            method: 'GET',
-        });
 
+        const list:any = await sendToSpring('/file/'+link, 'GET', '', '');
         var tmpList: File[] = [];
         for(const idx in list.data){
             var tmpType = '';

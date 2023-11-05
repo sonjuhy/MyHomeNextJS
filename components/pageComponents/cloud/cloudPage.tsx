@@ -14,6 +14,7 @@ import {Button, Stack, Row, Col, Container, Tabs, Tab, ToastContainer, Toast} fr
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import NoneFileIcon from '/public/image/icon/nofile.png';
+import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
 interface File {
     uuid: string;
@@ -61,57 +62,64 @@ export default function Main() {
 
 
     async function getFileList(mode:string) {
-        const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(location) : 'getPublicFilesInfo/?location='+encodeURI(location); // for test
-        setPlace(location);
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-        const list:any = await axios.request({
-            headers: {'Authorization': 'Bearer ' + accessToken},
-            url: '/file/'+link,
-            method: 'GET',
-        });
-        var tmpList: File[] = [];
-        for(const idx in list.data){
+        console.log("getFileList access token: " + accessToken);
+        if (accessToken !== null) {
+            const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(location) : 'getPublicFilesInfo/?location='+encodeURI(location); // for test
+            setPlace(location);
+            // const list:any = await axios.request({
+            //     headers: {'Authorization': accessToken},
+            //     url: '/file/'+link,
+            //     method: 'GET',
+            // });
+            const list:any = await sendToSpring('/file/'+link, 'GET' ,'', '');
+            console.log('cloudPage list code : '+list.result);
+            console.log('cloudPage list msg : '+list.msg);
+            var tmpList: File[] = [];
+            for(const idx in list.data){
 
-            var tmpType = '';
-            if(imageExtension.includes(list.data[idx].type.toLowerCase())) tmpType='img';
-            else if(videoExtension.includes(list.data[idx].type.toLowerCase())) tmpType='video';
-            else if(list.data[idx].type === 'dir') tmpType='dir';
-            else tmpType='file';
+                var tmpType = '';
+                if(imageExtension.includes(list.data[idx].type.toLowerCase())) tmpType='img';
+                else if(videoExtension.includes(list.data[idx].type.toLowerCase())) tmpType='video';
+                else if(list.data[idx].type === 'dir') tmpType='dir';
+                else tmpType='file';
 
-            let object: File ={
-                uuid: list.data[idx].uuid,
-                path: list.data[idx].path,
-                name: list.data[idx].name,
-                type: tmpType,
-                size: list.data[idx].size
-            }
-            tmpList.push(object);
-        }
-        tmpList.sort(function(a,b){
-            if(a.type === 'dir' && b.type !== 'dir') return -1;
-            else if(a.type !== 'dir' && b.type !== 'dir'){
-                if(a.type === 'img' && b.type !== a.type) return -1;
-                else if(a.type !== 'img' && b.type !== 'img'){
-                    if(a.type === 'video' && b.type !== 'video') return -1;
-                    else return 1;
+                let object: File ={
+                    uuid: list.data[idx].uuid,
+                    path: list.data[idx].path,
+                    name: list.data[idx].name,
+                    type: tmpType,
+                    size: list.data[idx].size
                 }
+                tmpList.push(object);
             }
-            return 1;
-        });
-        let upObject: File = {
-            uuid: 'move up',
-            path: location,
-            name: '위로가기',
-            type: 'up',
-            size: 0
+            tmpList.sort(function(a,b){
+                if(a.type === 'dir' && b.type !== 'dir') return -1;
+                else if(a.type !== 'dir' && b.type !== 'dir'){
+                    if(a.type === 'img' && b.type !== a.type) return -1;
+                    else if(a.type !== 'img' && b.type !== 'img'){
+                        if(a.type === 'video' && b.type !== 'video') return -1;
+                        else return 1;
+                    }
+                }
+                return 1;
+            });
+            let upObject: File = {
+                uuid: 'move up',
+                path: location,
+                name: '위로가기',
+                type: 'up',
+                size: 0
+            }
+            tmpList.splice(0,0,upObject);
+            if(mode === 'public'){
+                setPublicFileList(tmpList);
+            }
+            else{
+                setPrivateFileList(tmpList);
+            }
         }
-        tmpList.splice(0,0,upObject);
-        if(mode === 'public'){
-            setPublicFileList(tmpList);
-        }
-        else{
-            setPrivateFileList(tmpList);
-        }
+        
     }
 
     function itemClick(uuid: string, type: string, path: string, name: string){
@@ -189,34 +197,39 @@ export default function Main() {
                     tmpUrl = '/file/downloadPrivateFile';
                 }
                 for(var idx in selectedFileList){
-                    await axios({
-                        method: 'POST',
-                        url: process.env.BASE_URL+tmpUrl,
-                        responseType: 'blob',  // Set the response type to 'blob' to handle binary data
-                        data:{
-                        path: '',
-                        name: 'download',
-                        uuidName: selectedFileList[idx].uuid,
-                        type: 'file',
-                        size: 0,
-                        location: '',
-                        state: 0,
-                        },
-                    })
-                    .then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', selectedFileList[idx].name); // Set the desired filename and extension
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    })
-                    .catch((error) => {
-                    console.error('Error downloading file:', error);
-                    });
-                    setDownloadMode(false);
-                    setSelectFileList([]);
+                    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+                    console.log("Downloading file access token :" + accessToken);
+                    if (accessToken !== null) {
+                        await axios({
+                            headers: {'Authorization': accessToken},
+                            method: 'POST',
+                            url: process.env.BASE_URL+tmpUrl,
+                            responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+                            data:{
+                                path: '',
+                                name: 'download',
+                                uuidName: selectedFileList[idx].uuid,
+                                type: 'file',
+                                size: 0,
+                                location: '',
+                                state: 0,
+                            },
+                        })
+                        .then((response) => {
+                            const url = window.URL.createObjectURL(new Blob([response.data]));
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.setAttribute('download', selectedFileList[idx].name); // Set the desired filename and extension
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        })
+                        .catch((error) => {
+                            console.error('Error downloading file:', error);
+                        });
+                        setDownloadMode(false);
+                        setSelectFileList([]);
+                    }
                 }
             }
             else{
@@ -262,35 +275,44 @@ export default function Main() {
             setErrorToast(true);
         }
         else{
-            if(stageMode === 'public'){
-                for(var idx in selectedFileList){
-                    await axios.request({
-                        url: '/file/deletePublicFileToTrash/?uuid='+selectedFileList[idx].uuid,
-                        method: 'DELETE',
-                    });
-                }
-                getFileList('public');
-            }
-            else{
-                const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-                if (accessToken !== null) {
+            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+            if (accessToken !== null) {
+                if(stageMode === 'public'){
                     for(var idx in selectedFileList){
-                        await axios.request({
-                            url: '/file/deletePrivateFileToTrash/',
-                            method: 'DELETE',
-                            params:{
-                                uuid: selectedFileList[idx].uuid,
-                                accessToken: accessToken,
-                            }
-                        });
+                        // await axios.request({
+                        //     headers: {'Authorization': accessToken},
+                        //     url: '/file/deletePublicFileToTrash/?uuid='+selectedFileList[idx].uuid,
+                        //     method: 'DELETE',
+                        // });
+                        await sendToSpring('/file/deletePublicFileToTrash/?uuid='+selectedFileList[idx].uuid, 'DELETE', '', '');
+                    }
+                    getFileList('public');
+                }
+                else{
+                    for(var idx in selectedFileList){
+                        // await axios.request({
+                        //     headers: {'Authorization': accessToken},
+                        //     url: '/file/deletePrivateFileToTrash/',
+                        //     method: 'DELETE',
+                        //     params:{
+                        //         uuid: selectedFileList[idx].uuid,
+                        //         accessToken: accessToken,
+                        //     }
+                        // });
+                        var params = {
+                            uuid: selectedFileList[idx].uuid,
+                            accessToken: accessToken,
+                        }
+                        await sendToSpring('/file/deletePrivateFileToTrash/','DELETE','',params);
                     }
                     getFileList('private');
                 }
-                else{
-                    setErrorMessage("유저 정보가 없습니다. 다시 로그인 해주세요.");
-                    setErrorToast(true);
-                }
             }
+            else{
+                setErrorMessage("유저 정보가 없습니다. 다시 로그인 해주세요.");
+                setErrorToast(true);
+            }
+            
             setDownloadMode(false);
             setSelectFileList([]);
         }
@@ -302,7 +324,7 @@ export default function Main() {
             GetUserInfo(accessToken)
                 .then((data: User) => {
                     setUser(data);
-                    getFileList('private');
+                    getFileList('public');
                 })
                 .catch();
         }
