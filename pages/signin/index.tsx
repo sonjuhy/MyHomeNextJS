@@ -23,13 +23,15 @@ export default function SignIn() {
             url: '/auth/signIn',
             method: 'POST',
             data:{
-                userId: 0,
+                // userId: 0,
+                // id: email,
+                // name: '',
+                // password: password,
+                // accessToken: '',
+                // refreshToken: '',
+                // auth: ''
                 id: email,
-                name: '',
-                password: password,
-                accessToken: '',
-                refreshToken: '',
-                auth: ''
+                password: password
             }
         })
         if(data.status === 200){

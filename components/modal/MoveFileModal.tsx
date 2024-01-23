@@ -102,7 +102,8 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
         }
         else{
             const tmpPath: string[] = path.split(mode === 'public' ? defaultPublicLocation : defaultPrivateLocation);
-            if(tmpPath[1] !== ''){
+            console.log(tmpPath);
+            if(tmpPath[1] !== '' && tmpPath !== undefined){
                 tmpPath[1] = tmpPath[1].replaceAll('\\', '-');
                 setMovePath(tmpPath[1]);
             }
