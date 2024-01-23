@@ -23,10 +23,15 @@ type loaderProps = {
 };
 export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Element {
     const [imageSrc, setImageSrc] = useState('');
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
 
     const imagePublicLoader = ({src}:loaderProps) =>{
         return '/file/downloadPublicMedia/'+src+'/'+accessToken;
     };
+    const imageLoader = ({src}:loaderProps) => {
+        if(mode === 'public') return '/file/downloadPublicMedia/'+src+'/'+accessToken;
+        else return '/file/downloadPrivateMedia/'+src+'/'+accessToken;    
+    }
 
     const getImagePublicLoader = async (src:string) =>{
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
@@ -82,10 +87,6 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
         }
     };
 
-    useEffect(() =>{
-        if(type === 'img') getImagePublicLoader(uuid);
-        else if(type == 'video') getThumbNailLoader(uuid);
-    });
     return (
         <Card className='shadow' style={{height:'13rem'}}>
             <br/>
@@ -102,7 +103,8 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
                         }
                     >
                     <Image
-                        src={imageSrc === '' ? ErrorIcon : imageSrc}
+                    loader={imageLoader}
+                        src={uuid}
                         alt="cloud image"
                         width={0}
                         height={0}
@@ -124,9 +126,8 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
                         }
                     >
                     <Image
-                        // loader={thumbNailLoader}
-                        // src={uuid}
-                        src={imageSrc === '' ? ErrorIcon : imageSrc}
+                        loader={thumbNailLoader}
+                        src={uuid}
                         alt="cloud image"
                         width={0}
                         height={0}

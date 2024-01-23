@@ -23,45 +23,23 @@ type loaderProps = {
 export default function ImageModal({click, status, info, mode, type, name}: ModalProps): JSX.Element {
   const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [imageSrc, setImageSrc] = useState('');
 
   const mediaPublicLoader = ({src}:loaderProps) =>{
-    return process.env.BASE_URL+'/file/downloadPublicMedia/'+src+'/'+accessToken;
+    return '/file/downloadPublicMedia/'+src+'/'+accessToken;
   };
 
-  const getMediaPublicLoader = async (src:string) =>{
-    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-    if (accessToken !== null) {
-      const imageUrl = process.env.BASE_URL+'/file/downloadPublicMedia/' + src; 
-      await axios({
-        headers: {'Authorization': accessToken},
-        method: 'GET',
-        url: imageUrl,
-        responseType: 'blob',  // Set the response type to 'blob' to handle binary data
-      })
-      .then((response) => {
-          const blob = new Blob([response.data]);
-          const url = URL.createObjectURL(blob);
-          setImageSrc(url);
-      })
-      .catch((error) => {
-          console.error('Error downloading file:', error);
-      });
-    }
-  }
-
   const mediaPrivateLoader = ({src}:loaderProps) =>{
-      return process.env.BASE_URL+'/file/downloadPrivateMedia/'+src+'/'+accessToken;
+      return '/file/downloadPrivateMedia/'+src+'/'+accessToken;
   };
 
   const videoLoader = (info:string, mode:string) => {
-    if(mode === 'public') return process.env.BASE_URL+'/file/streamingPublicVideo/'+info+'/'+accessToken;
-    else return process.env.BASE_URL+'/file/streamingPublicVideo/'+info+'/'+accessToken;
+    if(mode === 'public') return '/file/streamingPublicVideo/'+info+'/'+accessToken;
+    else return '/file/streamingPublicVideo/'+info+'/'+accessToken;
   }
   
   async function DownloadFile(){
     console.log('DownloadFile : '+info);
-    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;  
+    
     if (accessToken !== null) {
       var tmpUrl = '';
       if(mode == 'public') {
@@ -71,8 +49,9 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
         tmpUrl = '/file/downloadPrivateFile';
       }
       await axios({
+        headers : {'Authorization' : accessToken},
         method: 'POST',
-        url: process.env.BASE_URL+tmpUrl,
+        url: tmpUrl,
         responseType: 'blob',  // Set the response type to 'blob' to handle binary data
         data:{
           path: '',
@@ -99,10 +78,6 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
     }
   }
 
-  useEffect(()=>{
-    getMediaPublicLoader(info);
-  });
-
   return (
     <div>
       <Modal show={status} onHide={click} aria-labelledby="contained-modal-title-vcenter" centered size='lg'>
@@ -114,9 +89,9 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
           
           <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
             <Image
-              // loader={mode === 'public' ? mediaPublicLoader : mediaPrivateLoader}
-              // src={info}
-              src={imageSrc === '' ? ErrorIcon : imageSrc }
+              loader={mode === 'public' ? mediaPublicLoader : mediaPrivateLoader}
+              src={info}
+              // src={imageSrc === '' ? ErrorIcon : imageSrc }
               alt="cloud image"
               width={0}
               height={0}

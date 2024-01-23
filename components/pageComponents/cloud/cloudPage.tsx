@@ -35,6 +35,7 @@ interface User {
 
 let defaultPublicLocation = '__home__disk1__home__public__';
 let defaultPrivateLocation = '__home__disk1__home__private__';
+let underBar = '__';
 
 export default function Main() {
     const [user, setUser] = useState<User>();
@@ -124,11 +125,11 @@ export default function Main() {
 
     function itemClick(uuid: string, type: string, path: string, name: string) {
         if (type === 'dir') {
-            var link = path + '\\';
+            var link = path + underBar;
             setLocation(link);
         }
         else if (type === 'up') {
-            if (stageMode === 'private' && location === defaultPrivateLocation + 'User_' + user?.userId + '\\') {
+            if (stageMode === 'private' && location === defaultPrivateLocation + 'User_' + user?.userId + underBar) {
                 setErrorToast(true);
                 setErrorMessage('이미 최상단 폴더입니다.');
             }
@@ -140,7 +141,7 @@ export default function Main() {
                 var locationSplit: string[] = location.split('__');
                 var link = '';
                 for (var i = 0; i < locationSplit.length - 2; i++) {
-                    link += locationSplit[i] + '\\';
+                    link += locationSplit[i] + underBar;
                 }
                 setLocation(link);
             }
@@ -203,7 +204,7 @@ export default function Main() {
                         await axios({
                             headers: { 'Authorization': accessToken },
                             method: 'POST',
-                            url: process.env.BASE_URL + tmpUrl,
+                            url: tmpUrl,
                             responseType: 'blob',  // Set the response type to 'blob' to handle binary data
                             data: {
                                 path: '',
@@ -337,7 +338,7 @@ export default function Main() {
             setLocation(defaultPublicLocation);
         }
         else {
-            setLocation(defaultPrivateLocation + 'User_' + user?.userId + '\\');
+            setLocation(defaultPrivateLocation + 'User_' + user?.userId + underBar);
         }
     }, [stageMode]);
 
@@ -345,7 +346,7 @@ export default function Main() {
         if (stageMode === 'public') {
             getFileList('public');
             var path = location.split(defaultPublicLocation)[1];
-            if (path !== '') setNowPath(path.replace('\\', '-'));
+            if (path !== '') setNowPath(path.replace(underBar, '-'));
         }
         else {
             const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
@@ -354,7 +355,7 @@ export default function Main() {
                     .then((data: User) => {
                         setUser(data);
                         var path = location.split(defaultPrivateLocation)[1];
-                        path = path.split('User_' + user?.userId + '\\')[1].replace('\\', '-');
+                        path = path.split('User_' + user?.userId + underBar)[1].replace(underBar, '-');
                         if (path !== '') setNowPath(path);
                         getFileList('private');
                     })
@@ -376,7 +377,7 @@ export default function Main() {
             <ImageModal click={clickImageModal} status={imageModalVisible} info={fileUUID} mode={stageMode} type={selectFileType} name={selectFileName} />
             <UploadModal click={clickUploadModal} status={uploadModalVisible} mode={stageMode} path={place} location={location} />
             <MkdirModal click={clickMkdirModal} status={mkdirModalVisible} mode={stageMode} path={location} fileList={stageMode === 'public' ? publicFileList : privateFileList} />
-            <MoveFileModal click={(result: boolean) => clickMoveModal(result)} status={moveModalVisible} mode={stageMode} location={location} selectedFileList={selectedFileList} />
+            {/* <MoveFileModal click={(result: boolean) => clickMoveModal(result)} status={moveModalVisible} mode={stageMode} location={location} selectedFileList={selectedFileList} /> */}
             <div className='content'>
                 <br />
                 <h1>Cloud</h1>
@@ -410,7 +411,7 @@ export default function Main() {
                         <Row className='g-4'>
                             {publicFileList.length !== 0 && (
                                 Array.from({ length: publicFileList.length }).map((_, index: number) => (
-                                    <Col key={publicFileList[index].name}>
+                                    <Col key={publicFileList[index].path}>
                                         <Container style={{ padding: '2vh', width: '12rem' }}>
                                             <div
                                                 className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}`}
@@ -436,7 +437,7 @@ export default function Main() {
                         <Row className='g-4'>
                             {privateFileList.length !== 0 && (
                                 Array.from({ length: privateFileList.length }).map((_, index: number) => (
-                                    <Col key={privateFileList[index].name}>
+                                    <Col key={privateFileList[index].path}>
                                         <Container style={{ padding: '2vh', width: '12rem' }}>
                                             <div
                                                 className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}`}
