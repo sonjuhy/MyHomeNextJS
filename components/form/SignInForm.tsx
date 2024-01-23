@@ -6,7 +6,7 @@ import { Button, Form } from 'react-bootstrap';
 type propsForm = {
     signIn: Function
 }
-export default function form({signIn} : propsForm) {
+export default function SignInForm({signIn} : propsForm) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -26,7 +26,7 @@ export default function form({signIn} : propsForm) {
                 <Form.Label>Email address</Form.Label>
                 <Form.Control type="email" placeholder="Enter email" onChange={handleEmail}/>
                 <Form.Text className="text-muted">
-                    We'll never share your email with anyone else.
+                    We`&apos;`ll never share your email with anyone else.
                 </Form.Text>
             </Form.Group>
 
@@ -45,7 +45,7 @@ export default function form({signIn} : propsForm) {
                 </Button>
             </div>
             <br/>
-            <p className='text-center'>Don't have an account? <Link href='/signup'>Sign Up</Link></p>
+            <p className='text-center'>Don`&apos;`t have an account? <Link href='/signup'>Sign Up</Link></p>
         </Form>
     )
 }

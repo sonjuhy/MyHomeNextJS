@@ -1,21 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: false,
   env: {
-    // BASE_URL: 'http://localhost:8080',
-    BASE_URL: '',
+    BASE_URL: process.env.SERVER_ADDRESS,
   },
   async rewrites(){
     return[
       {
         source: '/:path*',
-        destination: 'http://192.168.0.254:8081/:path*',
+        destination: process.env.SERVER_ADDRESS+'/:path*',
       },
     ];
   },
-  // image: {
-  //   domains: ['http://localhost:8080/file']
-  // },
 }
 
 module.exports = nextConfig

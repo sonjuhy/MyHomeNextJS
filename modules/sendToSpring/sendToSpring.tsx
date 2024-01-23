@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export default async function sendToSpring(url:string, type:string, data:any, params:string) {
+export default async function sendToSpring(url:string, type:string, data:any, params:any) {
     var result = {'result': 0, 'msg':'', 'data':''};
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
     if(accessToken != null){

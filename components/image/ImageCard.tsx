@@ -20,7 +20,7 @@ type Props = {
   loc? :string;
   src? :string;
 }
-export default function loadImage({url}:Props): JSX.Element{
+export default function LoadImage({url}:Props): JSX.Element{
     const [imageSrc, setImageSrc] = useState('');
 
     let uuid:string = testBody['uuidName'];
@@ -42,7 +42,7 @@ export default function loadImage({url}:Props): JSX.Element{
               <Card.Title>Card Title</Card.Title>
               <Card.Text>
               Some quick example text to build on the card title and make up the
-              bulk of the card's content.
+              bulk of the card`&apos;`s content.
               </Card.Text>
               <Button variant="primary">Go somewhere</Button>
           </Card.Body>

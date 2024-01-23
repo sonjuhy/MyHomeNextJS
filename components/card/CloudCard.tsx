@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Card from 'react-bootstrap/Card';
 
+import axios from 'axios';
+
 import FileIcon from '/public/image/icon/file.png';
 import FolderIcon from '/public/image/icon/folder.png';
 import UpIcon from '/public/image/icon/up.png';
+import ErrorIcon from '/public/image/icon/error.png';
+
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 type props = {
@@ -18,20 +22,70 @@ type loaderProps = {
     src?: string;
 };
 export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Element {
-    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    const [imageSrc, setImageSrc] = useState('');
+
     const imagePublicLoader = ({src}:loaderProps) =>{
         return '/file/downloadPublicMedia/'+src+'/'+accessToken;
     };
 
-    const imagePrivateLoader = ({src}:loaderProps) =>{
-        return '/file/downloadPrivateMedia/'+src+'/'+accessToken;
-    };
+    const getImagePublicLoader = async (src:string) =>{
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+        if (accessToken !== null) {
+            var imageUrl = process.env.BASE_URL;
+            if(mode === 'public') {
+                imageUrl += '/file/downloadPublicMedia/' + src;
+            }
+            else {
+                imageUrl += '/file/downloadPrivateMedia/' + src;
+            }  
+            await axios({
+                headers: {'Authorization': accessToken},
+                method: 'GET',
+                url: imageUrl,
+                responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+            })
+            .then((response) => {
+                const blob = new Blob([response.data]);
+                const url = URL.createObjectURL(blob);
+                setImageSrc(url);
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+        }
+      }
 
     const thumbNailLoader = ({src}:loaderProps) =>{
         console.log('/file/downloadThumbNail/'+src+'/'+accessToken);
         return '/file/downloadThumbNail/'+src+'/'+accessToken;
     };
 
+    const getThumbNailLoader = async (uuid:string) =>{
+        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+        if (accessToken !== null) {
+            var imageUrl = process.env.BASE_URL + '/downloadThumbNail/'+uuid;
+
+            await axios({
+                headers: {'Authorization': accessToken},
+                method: 'GET',
+                url: imageUrl,
+                responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+            })
+            .then((response) => {
+                const blob = new Blob([response.data]);
+                const url = URL.createObjectURL(blob);
+                setImageSrc(url);
+            })
+            .catch((error) => {
+                console.error('Error downloading file:', error);
+            });
+        }
+    };
+
+    useEffect(() =>{
+        if(type === 'img') getImagePublicLoader(uuid);
+        else if(type == 'video') getThumbNailLoader(uuid);
+    });
     return (
         <Card className='shadow' style={{height:'13rem'}}>
             <br/>
@@ -48,8 +102,7 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
                         }
                     >
                     <Image
-                        loader={mode === 'public' ? imagePublicLoader : imagePrivateLoader}
-                        src={uuid}
+                        src={imageSrc === '' ? ErrorIcon : imageSrc}
                         alt="cloud image"
                         width={0}
                         height={0}
@@ -71,8 +124,9 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
                         }
                     >
                     <Image
-                        loader={thumbNailLoader}
-                        src={uuid}
+                        // loader={thumbNailLoader}
+                        // src={uuid}
+                        src={imageSrc === '' ? ErrorIcon : imageSrc}
                         alt="cloud image"
                         width={0}
                         height={0}

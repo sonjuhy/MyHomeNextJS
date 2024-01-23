@@ -10,6 +10,7 @@ import {Button, Stack, Row, Col, Container, Tabs, Tab, ToastContainer, Toast} fr
 
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import NoneFileIcon from '/public/image/icon/nofile.png';
+import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
 interface File {
     uuid: string;
@@ -52,46 +53,45 @@ export default function Main() {
     async function getFileList(mode:string) {
         const link = mode ==='private' ? 'getPrivateTrashFiles/?location='+encodeURI(location) : 'getPublicTrashFiles/?location='+encodeURI(location); // need to change findByLocation like cloudPage
         setPlace(location);
-        console.log(link);
-        const list:any = await axios.request({
-            url: '/file/'+link,
-            method: 'GET',
-        });
-        var tmpList: File[] = [];
-        console.log(list.data);
-        for(const idx in list.data){
+        const response = await sendToSpring('/file/'+link, 'GET', null, 'null');
+        if(response.result === 200){
+            const list:any = response.data;
+            var tmpList: File[] = [];
+            console.log(list.data);
+            for(const idx in list.data){
 
-            var tmpType = '';
-            if(imageExtension.includes(list.data[idx].type.toLowerCase())) tmpType='img';
-            else if(videoExtension.includes(list.data[idx].type.toLowerCase())) tmpType='video';
-            else if(list.data[idx].type === 'dir') tmpType='dir';
-            else tmpType='file';
+                var tmpType = '';
+                if(imageExtension.includes(list.data[idx].type.toLowerCase())) tmpType='img';
+                else if(videoExtension.includes(list.data[idx].type.toLowerCase())) tmpType='video';
+                else if(list.data[idx].type === 'dir') tmpType='dir';
+                else tmpType='file';
 
-            let object: File ={
-                uuid: list.data[idx].uuid,
-                path: list.data[idx].path,
-                name: list.data[idx].name,
-                type: tmpType,
-                size: list.data[idx].size
-            }
-            tmpList.push(object);
-        }
-        tmpList.sort(function(a,b){
-            if(a.type === 'dir' && b.type !== 'dir') return -1;
-            else if(a.type !== 'dir' && b.type !== 'dir'){
-                if(a.type === 'img' && b.type !== a.type) return -1;
-                else if(a.type !== 'img' && b.type !== 'img'){
-                    if(a.type === 'video' && b.type !== 'video') return -1;
-                    else return 1;
+                let object: File ={
+                    uuid: list.data[idx].uuid,
+                    path: list.data[idx].path,
+                    name: list.data[idx].name,
+                    type: tmpType,
+                    size: list.data[idx].size
                 }
+                tmpList.push(object);
             }
-            return 1;
-        });
-        if(mode === 'public'){
-            setPublicFileList(tmpList);
-        }
-        else{
-            setPrivateFileList(tmpList);
+            tmpList.sort(function(a,b){
+                if(a.type === 'dir' && b.type !== 'dir') return -1;
+                else if(a.type !== 'dir' && b.type !== 'dir'){
+                    if(a.type === 'img' && b.type !== a.type) return -1;
+                    else if(a.type !== 'img' && b.type !== 'img'){
+                        if(a.type === 'video' && b.type !== 'video') return -1;
+                        else return 1;
+                    }
+                }
+                return 1;
+            });
+            if(mode === 'public'){
+                setPublicFileList(tmpList);
+            }
+            else{
+                setPrivateFileList(tmpList);
+            }
         }
     }
 
@@ -114,24 +114,30 @@ export default function Main() {
     const removeFile = async() => {
         if(stageMode === 'public'){
             for(var idx in selectedFileList){
-                await axios.request({
-                    url: '/file/deletePublicFileInfo/'+selectedFileList[idx].path,
-                    method: 'DELETE',
-                });
+                await sendToSpring('/file/deletePublicFileInfo/'+selectedFileList[idx].path, 'DELETE', null, 'null');
+                // await axios.request({
+                //     url: '/file/deletePublicFileInfo/'+selectedFileList[idx].path,
+                //     method: 'DELETE',
+                // });
             }
             getFileList('public');
         }
         else{
             const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
             for(var idx in selectedFileList){
-                await axios.request({
-                    url: '/file/deletePrivateFileInfo/',
-                    method: 'DELETE',
-                    data:{
-                        path:selectedFileList[idx].path,
-                        accessToken: accessToken,
-                    }
-                });
+                const data = {
+                    path:selectedFileList[idx].path,
+                    accessToken: accessToken,
+                }
+                sendToSpring('/file/deletePrivateFileInfo/', 'DELETE', data, 'null');
+                // await axios.request({
+                //     url: '/file/deletePrivateFileInfo/',
+                //     method: 'DELETE',
+                //     data:{
+                //         path:selectedFileList[idx].path,
+                //         accessToken: accessToken,
+                //     }
+                // });
             }
             getFileList('private');
         }
@@ -142,10 +148,11 @@ export default function Main() {
         if(stageMode === 'public'){
             if(nowPath === defaultPublicLocation){
                 for(var idx in selectedFileList){
-                    await axios.request({
-                        url: '/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid,
-                        method: 'PUT',
-                    });
+                    await sendToSpring('/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid, 'PUT', null, 'null');
+                    // await axios.request({
+                    //     url: '/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid,
+                    //     method: 'PUT',
+                    // });
                 }
                 getFileList('public');
             }
@@ -158,14 +165,19 @@ export default function Main() {
             if(nowPath === defaultPrivateLocation){
                 const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
                 for(var idx in selectedFileList){
-                    await axios.request({
-                        url: '/file/restorePrivateFile/?uuid=',
-                        method: 'PUT',
-                        data:{
-                            uuid:selectedFileList[idx].uuid,
-                            accessToken:accessToken,
-                        }
-                    });
+                    const data = {
+                        uuid:selectedFileList[idx].uuid,
+                        accessToken:accessToken,
+                    }
+                    await sendToSpring('/file/restorePrivateFile/?uuid=', 'PUT', data, 'null');
+                    // await axios.request({
+                    //     url: '/file/restorePrivateFile/?uuid=',
+                    //     method: 'PUT',
+                    //     data:{
+                    //         uuid:selectedFileList[idx].uuid,
+                    //         accessToken:accessToken,
+                    //     }
+                    // });
                 }
                 getFileList('private');
                 setSelectFileList([]);

@@ -22,7 +22,7 @@ interface roomInfo{
 const categoryObj = [['balcony','베란다'], ['bath Room','화장실'], ['Big Room','큰방'],
 ['kitchen','부엌'], ['living Room','거실'], ['middle Room','중간방'], ['small Room','작은방']];
 
-export default function lightSelector({setRoom}:props):JSX.Element {
+export default function LightSelector({setRoom}:props):JSX.Element {
     const [category, setCategory] = useState<categoryInfo[]>([]);
     const [roomList, setRoomList] = useState<roomInfo[]>([]);
     
