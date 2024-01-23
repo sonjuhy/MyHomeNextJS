@@ -32,8 +32,8 @@ interface User {
     auth: string;
 }
 
-let defaultPublicLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\public\\';
-let defaultPrivateLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\private\\';
+let defaultPublicLocation = '__home__disk1__home__public__';
+let defaultPrivateLocation = '__home__disk1__home__private__';
 
 export default function Main() {
     const [user, setUser] = useState<User>();
@@ -61,11 +61,12 @@ export default function Main() {
 
 
     async function getFileList(mode:string) {
+        console.log("getFileList");
         const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(location) : 'getPublicFilesInfo/?location='+encodeURI(location); // for test
         setPlace(location);
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         const list:any = await axios.request({
-            headers: {'Authorization': 'Bearer ' + accessToken},
+            headers: {'Authorization': accessToken},
             url: '/file/'+link,
             method: 'GET',
         });
@@ -116,11 +117,11 @@ export default function Main() {
 
     function itemClick(uuid: string, type: string, path: string, name: string){
         if(type === 'dir'){
-            var link = path+'\\';
+            var link = path+'__';
             setLocation(link);
         }
         else if(type === 'up'){
-            if(stageMode === 'private' && location === defaultPrivateLocation+'User_'+user?.userId+'\\'){
+            if(stageMode === 'private' && location === defaultPrivateLocation+'User_'+user?.userId+'__'){
                 setErrorToast(true);
                 setErrorMessage('이미 최상단 폴더입니다.');
             }
@@ -129,10 +130,10 @@ export default function Main() {
                 setErrorMessage('이미 최상단 폴더입니다.');
             }
             else {
-                var locationSplit: string[] = location.split('\\');
+                var locationSplit: string[] = location.split('__');
                 var link = '';
                 for(var i=0; i<locationSplit.length-2; i++){
-                    link += locationSplit[i]+'\\';
+                    link += locationSplit[i]+'__';
                 }
                 setLocation(link);
             }
@@ -189,9 +190,11 @@ export default function Main() {
                     tmpUrl = '/file/downloadPrivateFile';
                 }
                 for(var idx in selectedFileList){
+                    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
                     await axios({
+                        headers: {'Authorization': accessToken},
                         method: 'POST',
-                        url: process.env.BASE_URL+tmpUrl,
+                        url: tmpUrl,
                         responseType: 'blob',  // Set the response type to 'blob' to handle binary data
                         data:{
                         path: '',
@@ -262,9 +265,11 @@ export default function Main() {
             setErrorToast(true);
         }
         else{
+            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
             if(stageMode === 'public'){
                 for(var idx in selectedFileList){
                     await axios.request({
+                        headers: {'Authorization': accessToken},
                         url: '/file/deletePublicFileToTrash/?uuid='+selectedFileList[idx].uuid,
                         method: 'DELETE',
                     });
@@ -272,10 +277,10 @@ export default function Main() {
                 getFileList('public');
             }
             else{
-                const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
                 if (accessToken !== null) {
                     for(var idx in selectedFileList){
                         await axios.request({
+                            headers: {'Authorization': accessToken},
                             url: '/file/deletePrivateFileToTrash/',
                             method: 'DELETE',
                             params:{
@@ -302,7 +307,8 @@ export default function Main() {
             GetUserInfo(accessToken)
                 .then((data: User) => {
                     setUser(data);
-                    getFileList('private');
+                    console.log("useEffect 1");
+                    // getFileList('public');
                 })
                 .catch();
         }
@@ -314,15 +320,16 @@ export default function Main() {
             setLocation(defaultPublicLocation);
         }
         else{
-            setLocation(defaultPrivateLocation+'User_'+user?.userId+'\\');
+            setLocation(defaultPrivateLocation+'User_'+user?.userId+'__');
         }
     },[stageMode]);
 
     useEffect(() => {
         if(stageMode === 'public') {
+            console.log("useEffect 2");
             getFileList('public');
             var path = location.split(defaultPublicLocation)[1];
-            if(path !== '') setNowPath(path.replace('\\', '-'));
+            if(path !== '' && path !== undefined) setNowPath(path.replace('__', '-'));
         }
         else{
             const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
@@ -331,8 +338,9 @@ export default function Main() {
                     .then((data: User) => {
                         setUser(data);
                         var path = location.split(defaultPrivateLocation)[1];
-                        path = path.split('User_'+user?.userId+'\\')[1].replace('\\','-');
-                        if(path !== '') setNowPath(path);
+                        path = path.split('User_'+user?.userId+'__')[1].replace('__','-');
+                        if(path !== '' && path !== undefined) setNowPath(path);
+                        console.log("useEffect 2");
                         getFileList('private');
                     })
                     .catch();
@@ -353,7 +361,7 @@ export default function Main() {
             <ImageModal click={clickImageModal} status={imageModalVisible} info={fileUUID} mode={stageMode} type={selectFileType} name={selectFileName}/>
             <UploadModal click={clickUploadModal} status={uploadModalVisible} mode={stageMode} path={place} location={location}/>
             <MkdirModal click={clickMkdirModal} status={mkdirModalVisible} mode={stageMode} path={location} fileList={stageMode === 'public' ? publicFileList : privateFileList}/>
-            <MoveFileModal click={(result:boolean) => clickMoveModal(result)} status={moveModalVisible} mode={stageMode} location={location} selectedFileList={selectedFileList}/>
+            {/* <MoveFileModal click={(result:boolean) => clickMoveModal(result)} status={moveModalVisible} mode={stageMode} location={location} selectedFileList={selectedFileList}/> */}
             <div className='content'>
                 <br/>
                 <h1>Cloud</h1>
@@ -387,7 +395,7 @@ export default function Main() {
                         <Row className='g-4'>
                             {publicFileList.length !== 0 && (
                                 Array.from({ length: publicFileList.length }).map((_, index: number) => (
-                                    <Col key={publicFileList[index].name}>
+                                    <Col key={publicFileList[index].path}>
                                         <Container style={{padding:'2vh', width:'12rem'}}>
                                             <div 
                                             className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
@@ -414,7 +422,7 @@ export default function Main() {
                         <Row className='g-4'>
                             {privateFileList.length !== 0 && (
                                 Array.from({ length: privateFileList.length }).map((_, index: number) => (
-                                    <Col key={privateFileList[index].name}>
+                                    <Col key={privateFileList[index].path}>
                                         <Container style={{padding:'2vh', width:'12rem'}}>
                                             <div 
                                             className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 

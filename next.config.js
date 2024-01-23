@@ -9,7 +9,7 @@ const nextConfig = {
     return[
       {
         source: '/:path*',
-        destination: 'http://192.168.0.18:8080/:path*',
+        destination: 'http://192.168.0.254:8081/:path*',
       },
     ];
   },

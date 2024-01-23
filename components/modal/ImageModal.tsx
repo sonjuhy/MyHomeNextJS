@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
@@ -20,19 +20,20 @@ type loaderProps = {
   src?: string;
 };
 export default function ImageModal({click, status, info, mode, type, name}: ModalProps): JSX.Element {
+  const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const mediaPublicLoader = ({src}:loaderProps) =>{
-    return process.env.BASE_URL+'/file/downloadPublicMedia/'+src;
+    return process.env.BASE_URL+'/file/downloadPublicMedia/'+src+'/'+accessToken;
   };
 
   const mediaPrivateLoader = ({src}:loaderProps) =>{
-      return process.env.BASE_URL+'/file/downloadPrivateMedia/'+src;
+      return process.env.BASE_URL+'/file/downloadPrivateMedia/'+src+'/'+accessToken;
   };
 
   const videoLoader = (info:string, mode:string) => {
-    if(mode === 'public') return process.env.BASE_URL+'/file/downloadPublicMedia/'+info;
-    else return process.env.BASE_URL+'/file/downloadPrivateMedia/'+info;;
+    if(mode === 'public') return process.env.BASE_URL+'/file/streamingPublicVideo/'+info+'/'+accessToken;
+    else return process.env.BASE_URL+'/file/streamingPublicVideo/'+info+'/'+accessToken;
   }
   
   async function DownloadFile(){
@@ -45,9 +46,10 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
       tmpUrl = '/file/downloadPrivateFile';
     }
     await axios({
+      headers: {'Authorization': accessToken},
       method: 'POST',
       url: process.env.BASE_URL+tmpUrl,
-      responseType: 'blob',  // Set the response type to 'blob' to handle binary data
+      responseType: 'blob',  // Set the response type to 'blob' to handle binary data      
       data:{
         path: '',
         name: 'download',

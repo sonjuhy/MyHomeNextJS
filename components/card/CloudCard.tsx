@@ -18,16 +18,18 @@ type loaderProps = {
     src?: string;
 };
 export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Element {
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
     const imagePublicLoader = ({src}:loaderProps) =>{
-        return '/file/downloadPublicMedia/'+src;
+        return '/file/downloadPublicMedia/'+src+'/'+accessToken;
     };
 
     const imagePrivateLoader = ({src}:loaderProps) =>{
-        return '/file/downloadPrivateMedia/'+src;
+        return '/file/downloadPrivateMedia/'+src+'/'+accessToken;
     };
 
     const thumbNailLoader = ({src}:loaderProps) =>{
-        return '/file/downloadThumbNail/'+src;
+        console.log('/file/downloadThumbNail/'+src+'/'+accessToken);
+        return '/file/downloadThumbNail/'+src+'/'+accessToken;
     };
 
     return (
