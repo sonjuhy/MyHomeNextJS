@@ -13,7 +13,7 @@ export default async function sendToSpring(url:string, type:string, data:any, pa
             data: data,
             params: {params}
         });
-        console.log(res);
+        // console.log(res);
         if(res.status === 200){
             result.result = 200;
             result.msg = 'success';
