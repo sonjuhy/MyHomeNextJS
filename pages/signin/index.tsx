@@ -10,12 +10,24 @@ import NavBar from '@/components/navbar/NavBar';
 import axios from 'axios';
 import { useState } from 'react';
 
+import { useAppDispatch } from '@/lib/hooks';
+import { reset } from '@/lib/features/pageType/pageSlice';
+import { 
+    setNowPathToPublicPath, 
+    setNowPathToPrivatePath, 
+    setDefaultPublicPath, 
+    setDefaultPrivatePath, 
+    setDefaultPublicTrashPath,
+    setDefaultPrivateTrashPath,
+    setDefaultThumbnailPath
+} from '@/lib/features/cloud/cloudSlice';
 
 export default function SignIn() {
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
     const router = useRouter();
+    const dispatch = useAppDispatch();
 
     async function signIn(email: string, password: string){
         console.log('signing in : ' + email);
@@ -48,7 +60,31 @@ export default function SignIn() {
             }
             else {
                 sessionStorage.setItem('accessToken', result.accessToken);
-                router.push('/');
+                dispatch(reset());
+                const path = await axios.request({
+                    url: '/file/getDefaultPath',
+                    method: 'GET',
+                    headers: {'Authorization': result.accessToken}
+                });
+                
+                if(path.status == 200){
+                    const pathList = path.data;
+                    for(var idx in pathList){
+                        if(pathList[idx].pathName === 'store'){
+                            dispatch(setDefaultPublicPath(pathList[idx].publicDefaultPath));
+                            dispatch(setDefaultPrivatePath(pathList[idx].privateDefaultPath));
+                            dispatch(setNowPathToPublicPath());
+                        }
+                        else if(pathList[idx].pathName === 'trash'){
+                            dispatch(setDefaultPublicTrashPath(pathList[idx].publicDefaultPath));
+                            dispatch(setDefaultPrivateTrashPath(pathList[idx].privateDefaultPath));
+                        }
+                        else if(pathList[idx].pathName === 'thumbnail'){
+                            dispatch(setDefaultThumbnailPath(pathList[idx].publicDefaultPath));
+                        }
+                    }
+                }
+                router.push('/main');
             }
         }
         else{

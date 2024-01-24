@@ -16,6 +16,8 @@ import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import NoneFileIcon from '/public/image/icon/nofile.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+
 interface File {
     uuid: string;
     path: string;
@@ -33,11 +35,17 @@ interface User {
     auth: string;
 }
 
-let defaultPublicLocation = '__home__disk1__home__public__';
-let defaultPrivateLocation = '__home__disk1__home__private__';
+
 let underBar = '__';
 
 export default function Main() {
+    // const defaultPublicLocation = '__home__disk1__home__public__';
+    // const defaultPrivateLocation = '__home__disk1__home__private__';
+
+    const defaultPublicLocation = useAppSelector((state)=>state.cloud.defaultPublicPath)+underBar;
+    const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultPrivatePath)+underBar;
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+
     const [user, setUser] = useState<User>();
     const [stageMode, setStageMode] = useState<string>('public');
     const [place, setPlace] = useState<string>(defaultPublicLocation);
@@ -63,19 +71,10 @@ export default function Main() {
 
 
     async function getFileList(mode: string) {
-        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-        console.log("getFileList access token: " + accessToken);
         if (accessToken !== null) {
             const link = mode === 'private' ? 'getPrivateFilesInfo/?location=' + encodeURI(location) : 'getPublicFilesInfo/?location=' + encodeURI(location); // for test
             setPlace(location);
-            // const list:any = await axios.request({
-            //     headers: {'Authorization': accessToken},
-            //     url: '/file/'+link,
-            //     method: 'GET',
-            // });
             const list: any = await sendToSpring('/file/' + link, 'GET', '', '');
-            console.log('cloudPage list code : ' + list.result);
-            console.log('cloudPage list msg : ' + list.msg);
             var tmpList: File[] = [];
             for (const idx in list.data) {
 
@@ -321,7 +320,6 @@ export default function Main() {
     };
 
     useEffect(() => {
-        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
         if (accessToken !== null) {
             GetUserInfo(accessToken)
                 .then((data: User) => {
@@ -349,7 +347,6 @@ export default function Main() {
             if (path !== '') setNowPath(path.replace(underBar, '-'));
         }
         else {
-            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
             if (accessToken !== null) {
                 GetUserInfo(accessToken)
                     .then((data: User) => {

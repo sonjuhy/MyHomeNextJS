@@ -18,6 +18,10 @@ import { useEffect, useState } from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import Link from 'next/link';
 
+import { persistReducer } from 'redux-persist';
+import { reset, changePage } from '@/lib/features/pageType/pageSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+
 interface User {
     userId: number;
     id: string;
@@ -33,13 +37,17 @@ export default function Main() {
     const [visible, setVisible] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [category, setCategory] = useState('home');
+    // const category = useAppSelector((state) => state.pageChangeReducer.value);
+    const category = useAppSelector((state) => state.page.value);
+    const defaultPath = useAppSelector((state)=>state.cloud.defaultPublicPath);
+
+    const dispatch = useAppDispatch();
 
     const router = useRouter();
     const theme = 'dark';
 
     function selectedCategory(selected: string) {
-        setCategory(selected);
+        dispatch(changePage(selected));
     }
     async function userPermissionCheck() {
         const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
@@ -96,17 +104,17 @@ export default function Main() {
                             </Link>
                         </div>
                         
-                        <div className={category === 'home' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('home')}}>Home</div>
-                        <div className={category === 'light' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('light')}}>Light</div>
-                        <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('weather')}}>Weather</div>
-                        <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{setCategory('cloud')}}>Cloud</div>
+                        <div className={category === 'home' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('home')}}>Home</div>
+                        <div className={category === 'light' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('light')}}>Light</div>
+                        <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('weather')}}>Weather</div>
+                        <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('cloud')}}>Cloud</div>
                         {(category === 'cloud' || category === 'cloudTrash') && (
-                            <div className={`${styles.selectedSubMenu}`} onClick={()=>{setCategory("cloudTrash")}}>Cloud Trash</div>
+                            <div className={`${styles.selectedSubMenu}`} onClick={()=>{selectedCategory("cloudTrash")}}>Cloud Trash</div>
                         )}
                     </div>
                     <div>
                         {category === 'home' && (
-                            <MainPage selectMenu={selectedCategory}/>
+                            <MainPage/>
                         )}
                         {category === 'light' && (
                             <LightPage/>
