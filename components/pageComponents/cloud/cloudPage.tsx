@@ -38,18 +38,16 @@ interface User {
     auth: string;
 }
 
-
 let underBar = '__';
 
 export default function Main() {
     const [dirLoading, setDirLoading] = useState(false);
 
-    // const pageNumber = useAppSelector((state) => state.cloud.pageCount);
     const defaultPublicLocation = useAppSelector((state)=>state.cloud.defaultPublicPath)+underBar;
     const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultPrivatePath)+underBar;
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
 
-    const [user, setUser] = useState<User>();
+    const userId = useAppSelector((state) => state.auth.userId);
     const [stageMode, setStageMode] = useState<string>('public');
     const [place, setPlace] = useState<string>(defaultPublicLocation);
     const [downloadMode, setDownloadMode] = useState(false);
@@ -81,7 +79,6 @@ export default function Main() {
             setDirLoading(true);
         }
         if (accessToken !== null) {
-            console.log(pageNumber);
             var tmpList: File[] = [];
             var link;
             if (stageMode === 'public') {
@@ -90,7 +87,6 @@ export default function Main() {
             else {
                 link = 'getPrivateFilesPageInfo/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
             }
-            console.log(link);
             const list: any = await sendToSpring('/file/' + link, 'GET', '', '');
             if(list.data.length > 0) {
                 for (const idx in list.data) {
@@ -257,7 +253,7 @@ export default function Main() {
     }
 
     const clickMoveUp = () => {
-        if (stageMode === 'private' && location === defaultPrivateLocation + 'User_' + user?.userId + underBar) {
+        if (stageMode === 'private' && location === defaultPrivateLocation + underBar + userId + underBar) {
             setErrorToast(true);
             setErrorMessage('이미 최상단 폴더입니다.');
         }
@@ -363,22 +359,12 @@ export default function Main() {
     }
 
     useEffect(() => {
-        if (accessToken !== null) {
-            GetUserInfo(accessToken)
-                .then((data: User) => {
-                    setUser(data);
-                })
-                .catch();
-        }
-    }, []);
-
-    useEffect(() => {
         setNowPath("최상위폴더");
         if (stageMode === 'public') {
             setLocation(defaultPublicLocation);
         }
         else {
-            setLocation(defaultPrivateLocation + 'User_' + user?.userId + underBar);
+            setLocation(defaultPrivateLocation + underBar + userId + underBar);
         }
     }, [stageMode]);
 
@@ -395,22 +381,14 @@ export default function Main() {
     }, [location]);
 
     useEffect(() => {
-        console.log('here');
         if (stageMode === 'public') {
             getFileList(false);
         }
         else {
-            if (accessToken !== null) {
-                GetUserInfo(accessToken)
-                    .then((data: User) => {
-                        setUser(data);
-                        var path = location.split(defaultPrivateLocation)[1];
-                        path = path.split('User_' + user?.userId + underBar)[1].replace(underBar, '-');
-                        if (path !== '') setNowPath(path);
-                        getFileList(true);
-                    })
-                    .catch();
-            }
+            var path = location.split(defaultPrivateLocation)[1];
+            path = path.split(underBar + userId + underBar)[1].replace(underBar, '-');
+            if (path !== '') setNowPath(path);
+            getFileList(false);
         }
     },[pageNumber]);
       

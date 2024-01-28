@@ -6,12 +6,14 @@ import storage from 'redux-persist/lib/storage'; // localStorage 에 저장. ses
 import counterReducer from './features/cloud/cloudSlice';
 import pageChangeReducer from './features/pageType/pageSlice';
 import cloudPathReducer from './features/cloud/cloudSlice';
+import authReducer from './features/auth/authSlice';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
 const rootReducer = combineReducers({
     page: pageChangeReducer,
     cloud: cloudPathReducer,
-    counter: counterReducer
+    counter: counterReducer,
+    auth: authReducer,
 });
 
 const persistConfig = {

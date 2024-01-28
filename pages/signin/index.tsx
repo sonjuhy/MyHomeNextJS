@@ -21,6 +21,7 @@ import {
     setDefaultPrivateTrashPath,
     setDefaultThumbnailPath
 } from '@/lib/features/cloud/cloudSlice';
+import { setAccessToken, setAuth, setId, setName, setRefreshToken } from '@/lib/features/auth/authSlice';
 
 export default function SignIn() {
     const [errorToast, setErrorToast] = useState(false);
@@ -60,6 +61,11 @@ export default function SignIn() {
             }
             else {
                 sessionStorage.setItem('accessToken', result.accessToken);
+                dispatch(setAccessToken(result.accessToken));
+                dispatch(setRefreshToken(result.refreshToken));
+                dispatch(setId(result.id));
+                dispatch(setName(result.name));
+                dispatch(setAuth(result.auth));
                 dispatch(reset());
                 const path = await axios.request({
                     url: '/file/getDefaultPath',
