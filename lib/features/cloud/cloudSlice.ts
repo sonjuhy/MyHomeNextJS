@@ -8,6 +8,7 @@ type PageCounterState = {
     defaultTrashPrivatePath: string;
     defaultThumbnailPath: string;
     nowPath: string;
+    pageCount: number;
 }
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
     defaultTrashPrivatePath: '',
     defaultThumbnailPath: '',
     nowPath: '',
+    pageCount: 0,
 } as PageCounterState;
 
 export const cloud = createSlice({
@@ -25,6 +27,9 @@ export const cloud = createSlice({
     initialState,
     reducers: {
         reset: () => initialState,
+        setNowPathStatic: (state, action: PayloadAction<string>) => {
+            state.nowPath = action.payload;
+        },
         setNowPathToPublicPath: (state) => {
             state.nowPath = state.defaultPublicPath;
         },
@@ -52,11 +57,22 @@ export const cloud = createSlice({
         setDefaultThumbnailPath: (state, action: PayloadAction<string>) => {
             state.defaultThumbnailPath = action.payload;
         },
+        setPageCount: (state, action: PayloadAction<number>) => {
+            state.pageCount = action.payload;
+        },
+        incrementPageCount: (state) => {
+            console.log("incrementPageCount");
+            state.pageCount +=1 ;
+        },
+        decrementPageCount: (state) =>{
+            state.pageCount -= 1;
+        }
     }
 })
 
 export const {
     reset,
+    setNowPathStatic,
     setNowPathToPublicPath,
     setNowPathToPrivatePath,
     setDefaultPublicPath,
@@ -65,6 +81,9 @@ export const {
     setNowPathToPrivateTrashPath,
     setDefaultPublicTrashPath,
     setDefaultPrivateTrashPath,
-    setDefaultThumbnailPath
+    setDefaultThumbnailPath,
+    setPageCount,
+    incrementPageCount,
+    decrementPageCount,
 } = cloud.actions;
 export default cloud.reducer;

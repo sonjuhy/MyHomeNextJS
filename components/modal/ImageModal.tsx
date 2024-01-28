@@ -9,6 +9,9 @@ import axios from 'axios';
 import FileIcon from '/public/image/icon/file.png';
 import ErrorIcon from '/public/image/icon/error.png';
 
+import Loading from '@/components/loading/Loading'
+import Spinner from  '@/public/image/img/spinner.gif'
+
 type ModalProps = {
   click: () => boolean;
   status: boolean;
@@ -23,6 +26,7 @@ type loaderProps = {
 export default function ImageModal({click, status, info, mode, type, name}: ModalProps): JSX.Element {
   const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
   const mediaPublicLoader = ({src}:loaderProps) =>{
     return '/file/downloadPublicMedia/'+src+'/'+accessToken;
@@ -38,8 +42,6 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
   }
   
   async function DownloadFile(){
-    console.log('DownloadFile : '+info);
-    
     if (accessToken !== null) {
       var tmpUrl = '';
       if(mode == 'public') {
@@ -86,18 +88,27 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
         </Modal.Header>
         <Modal.Body>
         {type === 'img' && (
-          
           <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
+            {/* {!loading && (
+              <div style={{ opacity:'1', transform:'translate(-50%, -50%)'}}>
+                  <Loading showText={false}/>
+              </div>
+            )} */}
             <Image
               loader={mode === 'public' ? mediaPublicLoader : mediaPrivateLoader}
               src={info}
-              // src={imageSrc === '' ? ErrorIcon : imageSrc }
               alt="cloud image"
               width={0}
               height={0}
               style={{width:'90%', height:'90%'}}
               loading="lazy"
+              // onLoadingComplete={()=>setLoading(true)}
+              onError={(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                const target = event.target as HTMLImageElement;
+                target.src = '/public/image/icon/error.png';
+              }}
             />
+            
           </div>
         )}
         {type === 'video' &&(
