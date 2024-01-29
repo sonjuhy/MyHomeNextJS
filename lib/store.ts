@@ -19,10 +19,10 @@ const rootReducer = combineReducers({
 const persistConfig = {
     key: 'root',
     storage,
-    // whitelist: ['page']
 }
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 export const makeStore = () => {
     return configureStore({
         reducer: persistedReducer,
@@ -39,6 +39,17 @@ export const makeStore = () => {
 export const store = makeStore();
 export const persistor = persistStore(store);
 
+// Infer the type of makeStore
+export type AppStore = ReturnType<typeof makeStore>
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<AppStore['getState']>
+export type AppDispatch = AppStore['dispatch']
+
+export const wrapper = createWrapper<AppStore>(makeStore, {
+    debug: process.env.NODE_ENV === 'development'
+});
+
+// without redux-persistence
 // export const makeStore = () => {
 //     return configureStore({
 //       reducer: {
@@ -49,13 +60,3 @@ export const persistor = persistStore(store);
 // }
 
 // const store = makeStore();
-
-// Infer the type of makeStore
-export type AppStore = ReturnType<typeof makeStore>
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<AppStore['getState']>
-export type AppDispatch = AppStore['dispatch']
-
-export const wrapper = createWrapper<AppStore>(makeStore, {
-    debug: process.env.NODE_ENV === 'development'
-});

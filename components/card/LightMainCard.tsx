@@ -19,13 +19,10 @@ interface Room {
 
 function WithHeaderStyledExample(): JSX.Element {
     const [roomList, setRoomList] = useState<Room[]>([]);
-
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    
     async function getLightList(){
         const list:any = await sendToSpring('/light/getAllList', 'GET','','');
-        // const list:any = await axios.request({
-        //     url: process.env.BASE_URL+'/light/getAllList',
-        //     method: 'GET'
-        // });
         
         var room_list: Room[] = [];
 
@@ -44,7 +41,7 @@ function WithHeaderStyledExample(): JSX.Element {
     }
     // use axios connection to server(GET) and control iot
     async function lightControl (room: Room){
-        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+        
         const bodyData = {
             room: room.name,
             kor: room.krName,
@@ -53,17 +50,7 @@ function WithHeaderStyledExample(): JSX.Element {
             connect: room.connect
         }
         const response  = await sendToSpring('/light/control/'+accessToken, 'POST', bodyData, '');
-        // const data:any = await axios.request({
-        //     url: process.env.BASE_URL+'/light/control/'+accessToken,
-        //     method: 'POST',
-        //     data:{
-        //         room: room.name,
-        //         kor: room.krName,
-        //         category: room.category,
-        //         state: room.status,
-        //         connect: room.connect
-        //     }
-        // });
+
         setTimeout(getLightList, 500);
     }
     useEffect(()=>{
@@ -91,7 +78,9 @@ function WithHeaderStyledExample(): JSX.Element {
                                         alt="Light"
                                         src={(roomList[index] as Room).status === 'On' ? LightOnIcon : LightOffIcon}
                                         loading = 'lazy'
-                                        layout="responsive"
+                                        width={0}
+                                        height={0}
+                                        style={{width: '100%', height: '100%'}}
                                     />
                                 </OverlayTrigger>
                                 <Button variant={roomList[index].status === 'On' ? 'info' : 'primary'} onClick={() => {

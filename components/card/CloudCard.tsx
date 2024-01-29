@@ -41,7 +41,7 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
     }
 
     return (
-        <Card className='shadow' style={{height:'13rem'}}>
+        <Card className='shadow' style={{height:'13rem', cursor:'pointer'}}>
             <br/>
             <Card.Title className='text-center' style={{width:'90%', fontSize:'1rem', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{name}</Card.Title>
             {type === 'img' && (

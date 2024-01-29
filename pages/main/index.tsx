@@ -33,13 +33,13 @@ interface User {
 }
 
 export default function Main() {
-    const [userName, setUserName] = useState('');
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+
+    const userName = useAppSelector((state) => state.auth.name);
     const [visible, setVisible] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    // const category = useAppSelector((state) => state.pageChangeReducer.value);
     const category = useAppSelector((state) => state.page.value);
-    const defaultPath = useAppSelector((state)=>state.cloud.defaultPublicPath);
 
     const dispatch = useAppDispatch();
 
@@ -49,29 +49,20 @@ export default function Main() {
     function selectedCategory(selected: string) {
         dispatch(changePage(selected));
     }
-    async function userPermissionCheck() {
-        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    async function userPermissionCheck() {        
         if (accessToken !== null) {
             AuthValidate()
                 .then(() => {
-                    console.log("Auth is validated");
                     setVisible(true);
-                    GetUserInfo(accessToken)
-                        .then((data: User) => {
-                            setUserName(data.name);
-                        })
-                        .catch();
                 })
                 .catch(() => {
-                    console.log("Auth is not validated");
-                    setErrorMessage('접근권한이 없습니다. 회원가입 이후 이용가능합니다.');
+                    setErrorMessage('접근권한이 없습니다. 관리자에게 문의 바랍니다.');
                     setErrorToast(true);
                     router.push('/', undefined, { shallow: true });
                 });
         }
         else {
-            console.log("Token is null");
-            setErrorMessage('접근권한이 없습니다. 회원가입 이후 이용가능합니다.');
+            setErrorMessage('로그인 이후 이용가능합니다.');
             setErrorToast(true);
             router.push('/', undefined, {shallow: true});
         }
@@ -109,7 +100,8 @@ export default function Main() {
                         <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('weather')}}>Weather</div>
                         <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('cloud')}}>Cloud</div>
                         {(category === 'cloud' || category === 'cloudTrash') && (
-                            <div className={`${styles.selectedSubMenu}`} onClick={()=>{selectedCategory("cloudTrash")}}>Cloud Trash</div>
+                            // <div className={`${styles.selectedSubMenu}`} onClick={()=>{selectedCategory("cloudTrash")}}>Cloud Trash</div>
+                            <div className={category === 'cloudTrash' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory("cloudTrash")}}>Cloud Trash</div>
                         )}
                     </div>
                     <div>
