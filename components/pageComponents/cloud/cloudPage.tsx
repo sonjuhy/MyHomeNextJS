@@ -375,8 +375,8 @@ export default function Main() {
         else{
             setPageNumber(0);
         }
-        if(stageMode === 'public') {setNowPath(location === defaultPublicLocation ? '최상위 폴더' : location.replace(defaultPublicLocation, ''))}
-        else { setNowPath(location === defaultPrivateLocation ? '최상위 폴더' : location.replace(defaultPrivateLocation, ''))}
+        if(stageMode === 'public') {setNowPath(location === defaultPublicLocation ? '최상위 폴더' : location.replace(defaultPublicLocation, '').replaceAll(underBar, ' > '))}
+        else { setNowPath(location === defaultPrivateLocation ? '최상위 폴더' : location.replace(defaultPrivateLocation, '').replaceAll(underBar, ' > '))}
         dispatch(setNowPathStatic(location));
     }, [location]);
 
@@ -386,7 +386,7 @@ export default function Main() {
         }
         else {
             var path = location.split(defaultPrivateLocation)[1];
-            path = path.split(underBar + userId + underBar)[1].replace(underBar, '-');
+            path = path.split(underBar + userId + underBar)[1].replaceAll(underBar, ' > ');
             if (path !== '') setNowPath(path);
             getFileList(false);
         }
@@ -411,6 +411,7 @@ export default function Main() {
             <div className='content'>
                 <br />
                 <h1>Cloud</h1>
+                <p><strong>현재 폴더 위치</strong> : {nowPath} </p>
                 <Stack direction="horizontal" style={{ marginBottom: '1rem'}}>
                     <Button className='btn-content' variant='outline-primary' style={{ marginRight: '1rem' }} onClick={clickMoveUp}>위로가기</Button>
                     <Button className='btn-content' variant="primary" style={{ marginRight: '1rem' }} onClick={() => { setUploadModalVisible(true) }}>업로드</Button>
@@ -432,7 +433,6 @@ export default function Main() {
                         </div>
                     )}
                 </Stack>
-                <p>현재 폴더 위치 : {nowPath} </p>
                 <div style={{overflowY:'scroll', overflowX:'hidden', scrollbarWidth:'thin', msOverflowStyle:'none'}}>
                     <div style={{height:'65vh'}}>
                         <Tabs defaultActiveKey='public' fill activeKey={stageMode} onSelect={(k) => {
