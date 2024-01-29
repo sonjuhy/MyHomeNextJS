@@ -20,6 +20,7 @@ export const Loading = ({showText}:props) => {
             height={0}
             style={{width: '8rem', height: '8rem'}}
             loading='eager'
+            priority={true}
             />
         </Background>
         </div>

@@ -30,19 +30,11 @@ export default function SignIn() {
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    async function signIn(email: string, password: string){
-        console.log('signing in : ' + email);
+    async function signIn(email: string, password: string){        
         const data = await axios.request({
             url: '/auth/signIn',
             method: 'POST',
             data:{
-                // userId: 0,
-                // id: email,
-                // name: '',
-                // password: password,
-                // accessToken: '',
-                // refreshToken: '',
-                // auth: ''
                 id: email,
                 password: password
             }
@@ -61,37 +53,49 @@ export default function SignIn() {
             }
             else {
                 sessionStorage.setItem('accessToken', result.accessToken);
+                dispatch(reset());
                 dispatch(setAccessToken(result.accessToken));
                 dispatch(setRefreshToken(result.refreshToken));
-                dispatch(setId(result.id));
-                dispatch(setName(result.name));
-                dispatch(setAuth(result.auth));
-                dispatch(reset());
-                const path = await axios.request({
-                    url: '/file/getDefaultPath',
+                
+                const userInfo = await axios.request({
+                    url: '/auth/getUserInfo/'+result.accessToken,
                     method: 'GET',
                     headers: {'Authorization': result.accessToken}
                 });
-                
-                if(path.status == 200){
-                    const pathList = path.data;
-                    for(var idx in pathList){
-                        if(pathList[idx].pathName === 'store'){
-                            dispatch(setDefaultPublicPath(pathList[idx].publicDefaultPath));
-                            dispatch(setDefaultPrivatePath(pathList[idx].privateDefaultPath));
-                            dispatch(setNowPathToPublicPath());
+                if(userInfo.status == 200){
+                    const userInfoData = userInfo.data;
+                    dispatch(setId(userInfoData.id));
+                    dispatch(setName(userInfoData.name));
+                    dispatch(setAuth(userInfoData.auth));
+
+                    const path = await axios.request({
+                        url: '/file/getDefaultPath',
+                        method: 'GET',
+                        headers: {'Authorization': result.accessToken}
+                    });
+                    
+                    if(path.status == 200){
+                        const pathList = path.data;
+                        for(var idx in pathList){
+                            if(pathList[idx].pathName === 'store'){
+                                dispatch(setDefaultPublicPath(pathList[idx].publicDefaultPath));
+                                dispatch(setDefaultPrivatePath(pathList[idx].privateDefaultPath));
+                                dispatch(setNowPathToPublicPath());
+                            }
+                            else if(pathList[idx].pathName === 'trash'){
+                                dispatch(setDefaultPublicTrashPath(pathList[idx].publicDefaultPath));
+                                dispatch(setDefaultPrivateTrashPath(pathList[idx].privateDefaultPath));
+                            }
+                            else if(pathList[idx].pathName === 'thumbnail'){
+                                dispatch(setDefaultThumbnailPath(pathList[idx].publicDefaultPath));
+                            }
                         }
-                        else if(pathList[idx].pathName === 'trash'){
-                            dispatch(setDefaultPublicTrashPath(pathList[idx].publicDefaultPath));
-                            dispatch(setDefaultPrivateTrashPath(pathList[idx].privateDefaultPath));
-                        }
-                        else if(pathList[idx].pathName === 'thumbnail'){
-                            dispatch(setDefaultThumbnailPath(pathList[idx].publicDefaultPath));
-                        }
+                        router.push('/main');
                     }
                 }
-                router.push('/main');
             }
+            setErrorMessage('로그인 과정에서 문제가 있습니다. 다시 시도해주세요.');
+            setErrorToast(true);
         }
         else{
             setErrorMessage('로그인 과정에서 문제가 있습니다. 다시 시도해주세요.');

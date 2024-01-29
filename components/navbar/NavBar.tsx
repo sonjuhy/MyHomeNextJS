@@ -28,7 +28,8 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
     if(accessToken !== null){
       sessionStorage.removeItem('accessToken');
-      router.reload();
+      // router.reload();
+      router.push('/');
     }
   }
 
@@ -43,7 +44,7 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
               height="35"
               className="d-inline-block align-top"
               alt="React Bootstrap logo"
-              priority
+              priority={true}
             />
             MyHome
           </Link>
@@ -62,6 +63,7 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
                   height="50"
                   className="d-inline-block align-top"
                   alt="sign in logo"
+                  priority={true}
                 />
             </Link>
             )}
@@ -73,6 +75,7 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
                   height="50"
                   className="d-inline-block align-top"
                   alt="log out logo"
+                  priority={true}
                 />
             </a>
             )}

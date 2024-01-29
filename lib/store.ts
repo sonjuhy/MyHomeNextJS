@@ -1,13 +1,18 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { createWrapper, HYDRATE } from 'next-redux-wrapper';
-
-import storage from 'redux-persist/lib/storage'; // localStorage 에 저장. sessionStorage에 저장하고 싶으면 'redux-persist/lib/storage/session' 참조
-
 import counterReducer from './features/cloud/cloudSlice';
 import pageChangeReducer from './features/pageType/pageSlice';
 import cloudPathReducer from './features/cloud/cloudSlice';
 import authReducer from './features/auth/authSlice';
-import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import storage from "redux-persist/lib/storage";
+
+import { persistReducer, persistStore } from "redux-persist";
+
+const persistConfig = {
+  key: "root",
+  storage,
+//   whitelist: [""],
+};
 
 const rootReducer = combineReducers({
     page: pageChangeReducer,
@@ -16,46 +21,16 @@ const rootReducer = combineReducers({
     auth: authReducer,
 });
 
-const persistConfig = {
-    key: 'root',
-    storage,
-    // whitelist: ['page']
-}
-
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-export const makeStore = () => {
-    return configureStore({
-        reducer: persistedReducer,
-        devTools: process.env.NODE_ENV !== 'production',
-        middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({ // 직렬화 위해
-            serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-            },
-        }),
-    });
-}
 
-export const store = makeStore();
-export const persistor = persistStore(store);
-
-// export const makeStore = () => {
-//     return configureStore({
-//       reducer: {
-//           counterReducer,
-//           pageChangeReducer,
-//       }
-//     })
-// }
-
-// const store = makeStore();
-
-// Infer the type of makeStore
-export type AppStore = ReturnType<typeof makeStore>
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<AppStore['getState']>
-export type AppDispatch = AppStore['dispatch']
-
-export const wrapper = createWrapper<AppStore>(makeStore, {
-    debug: process.env.NODE_ENV === 'development'
+const store = configureStore({
+  reducer: persistedReducer,
+  devTools: process.env.NODE_ENV !== "production", // 개발자도구 확인
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
 });
+
+export type RootState = ReturnType<typeof store.getState>;
+
+export default store;
+export const persistor = persistStore(store);
