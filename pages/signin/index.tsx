@@ -30,8 +30,7 @@ export default function SignIn() {
     const router = useRouter();
     const dispatch = useAppDispatch();
 
-    async function signIn(email: string, password: string){
-        console.log('signing in : ' + email);
+    async function signIn(email: string, password: string){        
         const data = await axios.request({
             url: '/auth/signIn',
             method: 'POST',

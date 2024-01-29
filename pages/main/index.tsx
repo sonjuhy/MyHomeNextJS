@@ -87,7 +87,7 @@ export default function Main() {
                 <div>
                     <div className={`${styles.sidebar} text-center`}>
                         <div>
-                            <Image alt='userIcon' src={UserIcon} className="rounded me-2" width={60} height={60} />
+                            <Image alt='userIcon' src={UserIcon} className="rounded me-2" width={60} height={60} priority={true}/>
                             <p style={{color: 'white'}}>{`${userName}`} 님</p>
                             <Link href="/setting">
                                 <Image alt='settingIcon' src={SettingIcon} className="rounded me-2" width={40} height={40} />
