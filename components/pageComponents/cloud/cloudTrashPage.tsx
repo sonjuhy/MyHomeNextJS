@@ -12,6 +12,10 @@ import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import NoneFileIcon from '/public/image/icon/nofile.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import Loading from '@/components/loading/Loading';
+import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/features/cloud/cloudSlice';
+
 interface File {
     uuid: string;
     path: string;
@@ -29,11 +33,16 @@ interface User {
     auth: string;
 }
 
-let defaultPublicLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\trash\\';
-let defaultPrivateLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\private\\';
+let underBar = '__';
 
 export default function Main() {
-    const [user, setUser] = useState<User>();
+    const [dirLoading, setDirLoading] = useState(false);
+
+    const defaultPublicLocation = useAppSelector((state)=>state.cloud.defaultTrashPublicPath)+underBar;
+    const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultTrashPrivatePath)+underBar;
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+
+    const userId = useAppSelector((state) => state.auth.userId);
     const [stageMode, setStageMode] = useState<string>('public');
     const [place, setPlace] = useState<string>(defaultPublicLocation);
     const [downloadMode, setDownloadMode] = useState(false);
@@ -51,6 +60,7 @@ export default function Main() {
 
 
     async function getFileList(mode:string) {
+        setDirLoading(true);
         const link = mode ==='private' ? 'getPrivateTrashFiles/?location='+encodeURI(location) : 'getPublicTrashFiles/?location='+encodeURI(location); // need to change findByLocation like cloudPage
         setPlace(location);
         const response = await sendToSpring('/file/'+link, 'GET', null, 'null');
@@ -93,6 +103,7 @@ export default function Main() {
                 setPrivateFileList(tmpList);
             }
         }
+        setDirLoading(false);
     }
 
     function itemSelect(uuid: string, name: string, type: string){
@@ -115,10 +126,6 @@ export default function Main() {
         if(stageMode === 'public'){
             for(var idx in selectedFileList){
                 await sendToSpring('/file/deletePublicFileInfo/'+selectedFileList[idx].path, 'DELETE', null, 'null');
-                // await axios.request({
-                //     url: '/file/deletePublicFileInfo/'+selectedFileList[idx].path,
-                //     method: 'DELETE',
-                // });
             }
             getFileList('public');
         }
@@ -130,14 +137,6 @@ export default function Main() {
                     accessToken: accessToken,
                 }
                 sendToSpring('/file/deletePrivateFileInfo/', 'DELETE', data, 'null');
-                // await axios.request({
-                //     url: '/file/deletePrivateFileInfo/',
-                //     method: 'DELETE',
-                //     data:{
-                //         path:selectedFileList[idx].path,
-                //         accessToken: accessToken,
-                //     }
-                // });
             }
             getFileList('private');
         }
@@ -149,10 +148,6 @@ export default function Main() {
             if(nowPath === defaultPublicLocation){
                 for(var idx in selectedFileList){
                     await sendToSpring('/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid, 'PUT', null, 'null');
-                    // await axios.request({
-                    //     url: '/file/restorePublicFile/?uuid='+selectedFileList[idx].uuid,
-                    //     method: 'PUT',
-                    // });
                 }
                 getFileList('public');
             }
@@ -170,14 +165,6 @@ export default function Main() {
                         accessToken:accessToken,
                     }
                     await sendToSpring('/file/restorePrivateFile/?uuid=', 'PUT', data, 'null');
-                    // await axios.request({
-                    //     url: '/file/restorePrivateFile/?uuid=',
-                    //     method: 'PUT',
-                    //     data:{
-                    //         uuid:selectedFileList[idx].uuid,
-                    //         accessToken:accessToken,
-                    //     }
-                    // });
                 }
                 getFileList('private');
                 setSelectFileList([]);
@@ -190,15 +177,7 @@ export default function Main() {
     }
 
     useEffect(() => {
-        const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-        if (accessToken !== null) {
-            GetUserInfo(accessToken)
-                .then((data: User) => {
-                    setUser(data);
-                    getFileList('private');
-                })
-                .catch();
-        }
+        
     },[]);
 
     useEffect(() => {
@@ -206,7 +185,7 @@ export default function Main() {
             setLocation(defaultPublicLocation);
         }
         else{
-            setLocation(defaultPrivateLocation+'User_'+user?.userId+'_trash\\');
+            setLocation(defaultPrivateLocation+underBar+userId+'_trash\\');
         }
     },[stageMode]);
 
@@ -215,18 +194,9 @@ export default function Main() {
             getFileList('public');
             var path = location.split(defaultPublicLocation)[1];
             setNowPath(path);
-            // if(path !== '') setNowPath(path.replace('\\', '-'));
         }
         else{
-            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-            if (accessToken !== null) {
-                GetUserInfo(accessToken)
-                    .then((data: User) => {
-                        setUser(data);
-                        getFileList('private');
-                    })
-                    .catch();
-            }
+            
         }
     },[location]);
     return (
@@ -256,59 +226,72 @@ export default function Main() {
                     }
                 }} >
                     <Tab eventKey='public' title='Public'>
-                        <Row className='g-4'>
-                            {publicFileList.length !== 0 && (
-                                Array.from({ length: publicFileList.length }).map((_, index: number) => (
-                                    <Col key={publicFileList[index].name}>
-                                        <Container style={{padding:'2vh', width:'12rem'}}>
-                                            <div 
-                                            className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
-                                            onClick={(key) => 
-                                            {itemSelect(publicFileList[index].uuid, publicFileList[index].name, publicFileList[index].type)}}>
-                                                <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={publicFileList[index].type === 'dir' ? 'dir' : 'file'} path={publicFileList[index].path} mode={'public'}/>
-                                            </div>
-                                        </Container>
-                                    </Col>
-                                ))
-                            )}
-                            {publicFileList.length === 0 && (
-                                <div style={{textAlign:'center', marginTop:'4rem'}}>
-                                    <Image
-                                    alt="none file"
-                                    src={NoneFileIcon}
-                                    />
-                                    <p className='text-center text-secondary' style={{fontSize:'3rem'}}>폴더가 비어있습니다.</p>
-                                </div>
-                            )}
-                        </Row>
+                        {dirLoading ? (
+                            <div style={{justifyContent:'center', display:'flex', marginTop:'20vh'}}>
+                                <Loading showText={true}/>
+                            </div>
+                        ) : (
+                            <Row className='g-4'>
+                                {publicFileList.length !== 0 && (
+                                    Array.from({ length: publicFileList.length }).map((_, index: number) => (
+                                        <Col key={publicFileList[index].name}>
+                                            <Container style={{padding:'2vh', width:'12rem'}}>
+                                                <div 
+                                                className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
+                                                onClick={(key) => 
+                                                {itemSelect(publicFileList[index].uuid, publicFileList[index].name, publicFileList[index].type)}}>
+                                                    <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={publicFileList[index].type === 'dir' ? 'dir' : 'file'} path={publicFileList[index].path} mode={'public'}/>
+                                                </div>
+                                            </Container>
+                                        </Col>
+                                    ))
+                                )}
+                                {publicFileList.length === 0 && (
+                                    <div style={{textAlign:'center', marginTop:'4rem'}}>
+                                        <Image
+                                        alt="none file"
+                                        src={NoneFileIcon}
+                                        />
+                                        <p className='text-center text-secondary' style={{fontSize:'3rem'}}>폴더가 비어있습니다.</p>
+                                    </div>
+                                )}
+                            </Row>
+                        )}
                     </Tab>
                     <Tab eventKey='private' title='Private'>
-                        <Row className='g-4'>
-                            {privateFileList.length !== 0 && (
-                                Array.from({ length: privateFileList.length }).map((_, index: number) => (
-                                    <Col key={privateFileList[index].name}>
-                                        <Container style={{padding:'2vh', width:'12rem'}}>
-                                            <div 
-                                            className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
-                                            onClick={(key) => 
-                                            {itemSelect(privateFileList[index].uuid, privateFileList[index].name, privateFileList[index].type)}}>
-                                                <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={privateFileList[index].type === 'dir' ? 'dir' : 'file'} path={privateFileList[index].path} mode={'private'}/>
-                                            </div>
-                                        </Container>
-                                    </Col>
-                                ))
-                            )}
-                            {privateFileList.length === 0 && (
-                                <div style={{textAlign:'center', marginTop:'4rem'}}>
-                                    <Image
-                                    alt="none file"
-                                    src={NoneFileIcon}
-                                    />
-                                    <p className='text-center text-secondary' style={{fontSize:'3rem'}}>폴더가 비어있습니다.</p>
-                                </div>
-                            )}
-                            
-                        </Row>
+                        {dirLoading ? (
+                            <div style={{justifyContent:'center', display:'flex', marginTop:'20vh'}}>
+                                <Loading showText={true}/>
+                            </div>
+                        ) : (
+                            <Row className='g-4'>
+                                {privateFileList.length !== 0 && (
+                                    Array.from({ length: privateFileList.length }).map((_, index: number) => (
+                                        <Col key={privateFileList[index].name}>
+                                            <Container style={{padding:'2vh', width:'12rem'}}>
+                                                <div 
+                                                className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}` } 
+                                                onClick={(key) => 
+                                                {itemSelect(privateFileList[index].uuid, privateFileList[index].name, privateFileList[index].type)}}>
+                                                    <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={privateFileList[index].type === 'dir' ? 'dir' : 'file'} path={privateFileList[index].path} mode={'private'}/>
+                                                </div>
+                                            </Container>
+                                        </Col>
+                                    ))
+                                )}
+                                {privateFileList.length === 0 && (
+                                    <div style={{textAlign:'center', marginTop:'4rem'}}>
+                                        <Image
+                                        alt="none file"
+                                        src={NoneFileIcon}
+                                        />
+                                        <p className='text-center text-secondary' style={{fontSize:'3rem'}}>폴더가 비어있습니다.</p>
+                                    </div>
+                                )}
+                                
+                            </Row>
+                        )}
+                        
                     </Tab>
                 </Tabs>
                 
