@@ -28,7 +28,8 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
     if(accessToken !== null){
       sessionStorage.removeItem('accessToken');
-      router.reload();
+      // router.reload();
+      router.push('/');
     }
   }
 

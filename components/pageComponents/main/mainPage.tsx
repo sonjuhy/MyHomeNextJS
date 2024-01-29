@@ -18,11 +18,11 @@ type props = {
             <div className='content'>
                 <br/>
                 <h1>Notice</h1>
-                <div className='text-decoration-none' style={{color:'black'}} onClick={() =>{onClickWeather('notice')}}>
+                <div className='text-decoration-none' style={{color:'black', cursor:'pointer'}} onClick={() =>{onClickWeather('notice')}}>
                     <CardNotice/>
                 </div>
                 <h1>Weather</h1>
-                <div onClick={() =>{onClickWeather('weather')}}>
+                <div onClick={() =>{onClickWeather('weather')}} style={{cursor:'pointer'}}>
                     <CardWeather/>
                 </div>
                 <h1>Light Control</h1>
