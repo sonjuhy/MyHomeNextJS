@@ -1,5 +1,3 @@
-import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
-
 import CardCloud from '@/components/card/CloudCard';
 import ImageModal from '@/components/modal/ImageModal';
 import UploadModal from '@/components/modal/UploadModal';
@@ -17,9 +15,10 @@ import NoneFileIcon from '/public/image/icon/nofile.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 import DownloadIcon from '/public/image/icon/download.png';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import Loading from '@/components/loading/Loading';
-import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/features/cloud/cloudSlice';
+import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/redux/features/cloud/cloudSlice';
+import { motion } from 'framer-motion';
 
 interface File {
     uuid: string;
@@ -393,7 +392,7 @@ export default function Main() {
     },[pageNumber]);
       
     return (
-        <>
+        <div className='cloud-scroll'>
             <ToastContainer className="p-3" position={'top-start'}>
                 <Toast show={errorToast} onClose={() => { setErrorToast(false) }} delay={3000} autohide={true}>
                     <Toast.Header>
@@ -446,30 +445,33 @@ export default function Main() {
                                         <Loading showText={true}/>
                                     </div>
                                 ) : (
-                                    <Row className='g-4'>
-                                        {publicFileList.length !== 0 && (
-                                            Array.from({ length: publicFileList.length }).map((_, index: number) => (
-                                                <Col key={publicFileList[index].uuid}>
-                                                    <Container style={{ padding: '2vh', width: '12rem' }}>
-                                                        <div
-                                                            className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}`}
-                                                            onClick={(key) => { !downloadMode ? itemClick(publicFileList[index].uuid, publicFileList[index].type, publicFileList[index].path, publicFileList[index].name) : itemSelect(publicFileList[index].uuid, publicFileList[index].name, publicFileList[index].type) }}>
-                                                            <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={publicFileList[index].type} path={publicFileList[index].path} mode={'public'} />
-                                                        </div>
-                                                    </Container>
-                                                </Col>
-                                            ))
-                                        )}
-                                        {publicFileList.length === 0 && (
-                                            <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-                                                <Image
-                                                    alt="none file"
-                                                    src={NoneFileIcon}
-                                                />
-                                                <p className='text-center text-secondary' style={{ fontSize: '3rem' }}>폴더가 비어있습니다.</p>
-                                            </div>
-                                        )}
-                                    </Row>
+                                    <div style={{justifyContent:'center', display:'flex'}}>
+                                        <Row className='g-4' xs={1} sm={2} md={4} lg={6} style={{justifyContent:'center', display:'flex'}}>
+                                            {publicFileList.length !== 0 && (
+                                                Array.from({ length: publicFileList.length }).map((_, index: number) => (
+                                                    <Col key={publicFileList[index].uuid} style={{ padding: '2vh', width: '12rem' }} >
+                                                        <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }}>
+                                                            <div
+                                                                className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === publicFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}`}
+                                                                onClick={(key) => { !downloadMode ? itemClick(publicFileList[index].uuid, publicFileList[index].type, publicFileList[index].path, publicFileList[index].name) : itemSelect(publicFileList[index].uuid, publicFileList[index].name, publicFileList[index].type) }}>
+                                                                <CardCloud uuid={publicFileList[index].uuid} name={publicFileList[index].name} type={publicFileList[index].type} path={publicFileList[index].path} mode={'public'} />
+                                                            </div>
+                                                        </motion.div>
+                                                    </Col>
+                                                ))
+                                            )}
+                                            {publicFileList.length === 0 && (
+                                                <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+                                                    <Image
+                                                        alt="none file"
+                                                        src={NoneFileIcon}
+                                                        priority={true}
+                                                    />
+                                                    <p className='text-center text-secondary' style={{ fontSize: '3rem' }}>폴더가 비어있습니다.</p>
+                                                </div>
+                                            )}
+                                        </Row>
+                                    </div>
                                 )}
                                 
                             </Tab>
@@ -484,11 +486,13 @@ export default function Main() {
                                             Array.from({ length: privateFileList.length }).map((_, index: number) => (
                                                 <Col key={privateFileList[index].path}>
                                                     <Container style={{ padding: '2vh', width: '12rem' }}>
-                                                        <div
-                                                            className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}`}
-                                                            onClick={(key) => { !downloadMode ? itemClick(privateFileList[index].uuid, privateFileList[index].type, privateFileList[index].path, privateFileList[index].name) : itemSelect(privateFileList[index].uuid, privateFileList[index].name, privateFileList[index].type) }}>
-                                                            <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={privateFileList[index].type} path={privateFileList[index].path} mode={'private'} />
-                                                        </div>
+                                                        <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.8 }}>
+                                                            <div
+                                                                className={`cardDiv ${selectedFileList.findIndex(e => e.uuid === privateFileList[index].uuid) !== -1 ? 'border rounded-3 border-primary border-2' : ''}`}
+                                                                onClick={(key) => { !downloadMode ? itemClick(privateFileList[index].uuid, privateFileList[index].type, privateFileList[index].path, privateFileList[index].name) : itemSelect(privateFileList[index].uuid, privateFileList[index].name, privateFileList[index].type) }}>
+                                                                <CardCloud uuid={privateFileList[index].uuid} name={privateFileList[index].name} type={privateFileList[index].type} path={privateFileList[index].path} mode={'private'} />
+                                                            </div>
+                                                        </motion.div>
                                                     </Container>
                                                 </Col>
                                             ))
@@ -498,6 +502,7 @@ export default function Main() {
                                                 <Image
                                                     alt="none file"
                                                     src={NoneFileIcon}
+                                                    priority={true}
                                                 />
                                                 <p className='text-center text-secondary' style={{ fontSize: '3rem' }}>폴더가 비어있습니다.</p>
                                             </div>
@@ -517,6 +522,7 @@ export default function Main() {
                                     height={0}
                                     style={{ width:'9rem', height:'9rem'}}
                                     onClick={clickDownloadMoreFileInfo}
+                                    priority={true}
                                     />
                                 </Button>
                             </div>
@@ -535,6 +541,6 @@ export default function Main() {
                 background: light-green;
             }
             `}</style>
-        </>
+        </div>
     )
 }

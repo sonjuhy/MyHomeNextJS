@@ -57,6 +57,12 @@
     /* height: 100vh; */
 }
 
+.wrapStyled {
+    position: relative;
+    /* max-width: 978px; */
+    padding: 0 0 30px 0;
+}
+
 @media screen and (max-width: 992px) {
     .sidebar {
         width: 100%;

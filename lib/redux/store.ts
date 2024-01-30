@@ -23,14 +23,27 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const store = configureStore({
-  reducer: persistedReducer,
-  devTools: process.env.NODE_ENV !== "production", // 개발자도구 확인
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }),
-});
+// const store = configureStore({
+//   reducer: persistedReducer,
+//   devTools: process.env.NODE_ENV !== "production", // 개발자도구 확인
+//   middleware: (getDefaultMiddleware) =>
+//     getDefaultMiddleware({ serializableCheck: false }),
+// });
+export const makeStore = () => {
+  return configureStore({
+    reducer: persistedReducer,
+    devTools: process.env.NODE_ENV !== "production", // 개발자도구 확인
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({ serializableCheck: false }),
+  });
+}
+const store = makeStore();
 
-export type RootState = ReturnType<typeof store.getState>;
+export type AppStore = ReturnType<typeof makeStore>
+export type AppDispatch = AppStore['dispatch']
+
+export type RootState = ReturnType<AppStore['getState']>;
+// export type RootState = ReturnType<typeof store.getState>;
 
 export default store;
 export const persistor = persistStore(store);

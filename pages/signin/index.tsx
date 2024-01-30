@@ -10,8 +10,8 @@ import NavBar from '@/components/navbar/NavBar';
 import axios from 'axios';
 import { useState } from 'react';
 
-import { useAppDispatch } from '@/lib/hooks';
-import { reset } from '@/lib/features/pageType/pageSlice';
+import { useAppDispatch } from '@/lib/redux/hooks';
+import { reset } from '@/lib/redux/features/pageType/pageSlice';
 import { 
     setNowPathToPublicPath, 
     setNowPathToPrivatePath, 
@@ -20,8 +20,8 @@ import {
     setDefaultPublicTrashPath,
     setDefaultPrivateTrashPath,
     setDefaultThumbnailPath
-} from '@/lib/features/cloud/cloudSlice';
-import { setAccessToken, setAuth, setId, setName, setRefreshToken } from '@/lib/features/auth/authSlice';
+} from '@/lib/redux/features/cloud/cloudSlice';
+import { setAccessToken, setAuth, setId, setName, setRefreshToken } from '@/lib/redux/features/auth/authSlice';
 
 export default function SignIn() {
     const [errorToast, setErrorToast] = useState(false);
