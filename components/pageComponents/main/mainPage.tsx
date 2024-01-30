@@ -2,8 +2,8 @@ import CardLight from "@/components/card/LightMainCard";
 import CardNotice from "@/components/card/NoticeCard";
 import CardWeather from '@/components/card/WeatherCard';
 
-import { changePage } from '@/lib/features/pageType/pageSlice';
-import { useAppDispatch } from '@/lib/hooks';
+import { changePage } from '@/lib/redux/features/pageType/pageSlice';
+import { useAppDispatch } from '@/lib/redux/hooks';
 import { motion } from "framer-motion";
 
 export default function Main() {

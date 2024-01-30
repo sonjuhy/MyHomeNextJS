@@ -15,9 +15,9 @@ import NoneFileIcon from '/public/image/icon/nofile.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 import DownloadIcon from '/public/image/icon/download.png';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import Loading from '@/components/loading/Loading';
-import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/features/cloud/cloudSlice';
+import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/redux/features/cloud/cloudSlice';
 import { motion } from 'framer-motion';
 
 interface File {

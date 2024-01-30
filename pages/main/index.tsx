@@ -17,8 +17,8 @@ import { useEffect, useState } from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import Link from 'next/link';
 
-import { changePage } from '@/lib/features/pageType/pageSlice';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { changePage } from '@/lib/redux/features/pageType/pageSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 
 import { motion, AnimatePresence } from "framer-motion"
 
