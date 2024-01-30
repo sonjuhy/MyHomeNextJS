@@ -1,6 +1,5 @@
 import AuthValidate from '@/modules/authValidate/authValidate'
 import NavBar from '@/components/navbar/NavBar';
-import GetUserInfo from '@/modules/getUserInfo/getUserInfo';
 import styles from "./index.module.css";
 import MainPage from '@/components/pageComponents/main/mainPage';
 import NoticePage from '@/components/pageComponents/notice/noticePage';
@@ -18,9 +17,10 @@ import { useEffect, useState } from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
 import Link from 'next/link';
 
-import { persistReducer } from 'redux-persist';
-import { reset, changePage } from '@/lib/features/pageType/pageSlice';
+import { changePage } from '@/lib/features/pageType/pageSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+
+import { motion, AnimatePresence } from "framer-motion"
 
 interface User {
     userId: number;
@@ -34,12 +34,12 @@ interface User {
 
 export default function Main() {
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+    const category = useAppSelector((state) => state.page.value);
 
     const userName = useAppSelector((state) => state.auth.name);
     const [visible, setVisible] = useState(false);
     const [errorToast, setErrorToast] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const category = useAppSelector((state) => state.page.value);
 
     const dispatch = useAppDispatch();
 
@@ -72,7 +72,7 @@ export default function Main() {
         userPermissionCheck();
     }, []);
     return (
-        <>
+        <div>
             <ToastContainer className="p-3" position={'top-start'}>
                 <Toast show={errorToast} onClose={() => { setErrorToast(false) }} delay={4000} autohide={true}>
                     <Toast.Header>
@@ -83,6 +83,7 @@ export default function Main() {
                 </Toast>
             </ToastContainer>
             <NavBar back={theme} mode={theme} sign={true} />
+            
             {visible && (
                 <div>
                     <div className={`${styles.sidebar} text-center`}>
@@ -100,32 +101,39 @@ export default function Main() {
                         <div className={category === 'weather' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('weather')}}>Weather</div>
                         <div className={category === 'cloud' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory('cloud')}}>Cloud</div>
                         {(category === 'cloud' || category === 'cloudTrash') && (
-                            // <div className={`${styles.selectedSubMenu}`} onClick={()=>{selectedCategory("cloudTrash")}}>Cloud Trash</div>
                             <div className={category === 'cloudTrash' ?`${styles.selectedMenu}` : `${styles.sidebarMenu}`} onClick={()=>{selectedCategory("cloudTrash")}}>Cloud Trash</div>
                         )}
                     </div>
-                    <div>
-                        {category === 'home' && (
-                            <MainPage/>
-                        )}
-                        {category === 'light' && (
-                            <LightPage/>
-                        )}
-                        {category === 'weather' && (
-                            <div>Weather</div>
-                        )}
-                        {category === 'cloud' && (
-                            <CloudPage/>
-                        )}
-                        {category === 'cloudTrash' && (
-                            <CloudTrashPage/>
-                        )}
-                        {category === 'notice' && (
-                            <NoticePage/>
-                        )}
+                    <div >
+                        <AnimatePresence mode='wait'>
+                            <motion.div
+                            key={category}
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -10, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            >
+                                {category === 'home' ? (
+                                    <MainPage/>
+                                ) : category === 'light' ? (
+                                    <LightPage/>
+                                ) : category === 'weather' ? (
+                                    <div>Weather</div>
+                                ) : category === 'cloud' ? (
+                                    <CloudPage/>
+                                ) : category === 'cloudTrash' ? (
+                                    <CloudTrashPage/>
+                                ) : category === 'notice' ? (
+                                    <NoticePage/>
+                                ) : (
+                                    <div></div>
+                                )}
+
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
                 </div>
             )}
-        </>
+        </div>
     )
 }

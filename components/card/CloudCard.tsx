@@ -118,11 +118,12 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
                     >
                         <Image
                             alt="Light"
-                            src={type === 'dir' ? FolderIcon : type==='up' ? UpIcon : FileIcon}
-                            loading = 'lazy'
+                            src={type === 'dir' ? FolderIcon : FileIcon}
+                            loading = 'eager'
                             width={0}
                             height={0}
                             style={{width: '10rem', height: '10rem'}}
+                            priority={true}
                         />
                     </OverlayTrigger>
                 </div>
