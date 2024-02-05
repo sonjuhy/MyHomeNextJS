@@ -41,7 +41,7 @@ export default function SignIn() {
         })
         if(data.status === 200){
             var result = data.data;
-            if(Object.keys(result).includes('error')){
+            if(Object.keys(result).includes('error') === true){
                 var error_log = result.error;
                 if(error_log === 'this Id is not user'){
                     setErrorMessage('계정 정보가 올바르지 않습니다.');
@@ -94,8 +94,6 @@ export default function SignIn() {
                     }
                 }
             }
-            setErrorMessage('로그인 과정에서 문제가 있습니다. 다시 시도해주세요.');
-            setErrorToast(true);
         }
         else{
             setErrorMessage('로그인 과정에서 문제가 있습니다. 다시 시도해주세요.');
