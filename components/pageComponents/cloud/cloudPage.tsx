@@ -46,7 +46,7 @@ export default function Main() {
     const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultPrivatePath)+underBar;
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
 
-    const userId = useAppSelector((state) => state.auth.userId);
+    const userId = useAppSelector((state) => state.auth.id);
     const [stageMode, setStageMode] = useState<string>('public');
     const [place, setPlace] = useState<string>(defaultPublicLocation);
     const [downloadMode, setDownloadMode] = useState(false);
@@ -81,11 +81,12 @@ export default function Main() {
             var tmpList: File[] = [];
             var link;
             if (stageMode === 'public') {
-                link = 'getPublicFilesPageInfo/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
+                link = 'getPublicFileListInfoPage/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
             }
             else {
-                link = 'getPrivateFilesPageInfo/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
+                link = 'getPrivateFileListInfoPage/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
             }
+            console.log(link);
             const list: any = await sendToSpring('/file/' + link, 'GET', '', '');
             if(list.data.length > 0) {
                 for (const idx in list.data) {
@@ -363,7 +364,7 @@ export default function Main() {
             setLocation(defaultPublicLocation);
         }
         else {
-            setLocation(defaultPrivateLocation + underBar + userId + underBar);
+            setLocation(defaultPrivateLocation + userId + underBar);
         }
     }, [stageMode]);
 
@@ -374,8 +375,8 @@ export default function Main() {
         else{
             setPageNumber(0);
         }
-        if(stageMode === 'public') {setNowPath(location === defaultPublicLocation ? '최상위 폴더' : location.replace(defaultPublicLocation, ''))}
-        else { setNowPath(location === defaultPrivateLocation ? '최상위 폴더' : location.replace(defaultPrivateLocation, ''))}
+        if(stageMode === 'public') {setNowPath(location === defaultPublicLocation ? '최상위 폴더' : location.replace(defaultPublicLocation, '').replaceAll(underBar, ' > '))}
+        else { setNowPath(location === defaultPrivateLocation ? '최상위 폴더' : location.replace(defaultPrivateLocation, '').replaceAll(underBar, ' > '))}
         dispatch(setNowPathStatic(location));
     }, [location]);
 
@@ -385,7 +386,7 @@ export default function Main() {
         }
         else {
             var path = location.split(defaultPrivateLocation)[1];
-            path = path.split(underBar + userId + underBar)[1].replace(underBar, '-');
+            path = path.split(underBar + userId + underBar)[1].replaceAll(underBar, ' > ');
             if (path !== '') setNowPath(path);
             getFileList(false);
         }
@@ -410,6 +411,7 @@ export default function Main() {
             <div className='content'>
                 <br />
                 <h1>Cloud</h1>
+                <p><strong>현재 폴더 위치</strong> : {nowPath} </p>
                 <Stack direction="horizontal" style={{ marginBottom: '1rem'}}>
                     <Button className='btn-content' variant='outline-primary' style={{ marginRight: '1rem' }} onClick={clickMoveUp}>위로가기</Button>
                     <Button className='btn-content' variant="primary" style={{ marginRight: '1rem' }} onClick={() => { setUploadModalVisible(true) }}>업로드</Button>
@@ -431,7 +433,6 @@ export default function Main() {
                         </div>
                     )}
                 </Stack>
-                <p>현재 폴더 위치 : {nowPath} </p>
                 <div style={{overflowY:'scroll', overflowX:'hidden', scrollbarWidth:'thin', msOverflowStyle:'none'}}>
                     <div style={{height:'65vh'}}>
                         <Tabs defaultActiveKey='public' fill activeKey={stageMode} onSelect={(k) => {
