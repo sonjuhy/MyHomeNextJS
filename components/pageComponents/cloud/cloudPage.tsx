@@ -433,7 +433,7 @@ export default function Main() {
                         </div>
                     )}
                 </Stack>
-                <div style={{overflowY:'scroll', overflowX:'hidden', scrollbarWidth:'thin', msOverflowStyle:'none'}}>
+                <div style={{overflowY:'scroll', overflowX:'hidden'}}>
                     <div style={{height:'65vh'}}>
                         <Tabs defaultActiveKey='public' fill activeKey={stageMode} onSelect={(k) => {
                             if (typeof (k) === 'string') {
