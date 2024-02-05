@@ -12,6 +12,8 @@ import { Form, ListGroup, Row, Toast, ToastContainer } from 'react-bootstrap';
 import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+
 type ModalProps = {
     click: (result:boolean) => boolean;
     status: boolean;
@@ -35,10 +37,15 @@ interface User {
     refreshToken: string;
     auth: string;
 }
-let defaultPublicLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\public\\';
-let defaultPrivateLocation = 'C:\\Users\\SonJunHyeok\\Desktop\\test\\private\\';
+
+let underBar = '__';
 
 export default function MoveFileModal({ click, status, mode, location, selectedFileList }: ModalProps): JSX.Element {
+
+    const defaultPublicLocation = useAppSelector((state)=>state.cloud.defaultPublicPath)+underBar;
+    const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultPrivatePath)+underBar;
+    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
+
     const [user, setUser] = useState<User>();
     const [movePath, setMovePath] = useState('');
     const [fileList, setFileList] = useState<File[]>();
@@ -57,54 +64,44 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
             tmpUrl = '/file/movePrivateFileInfo';
         }
         for(var idx in selectedFileList){
-            var data = {};
+            var data = '';
             if(mode == 'public'){
-                data = {path: selectedFileList[idx].path+selectedFileList[idx].name, location: nowLocation};
+                data = '?path='+ selectedFileList[idx].path+selectedFileList[idx].name + '&location='+ nowLocation;
             }
             else{
-                const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-                data = {path: selectedFileList[idx].path+selectedFileList[idx].name, location: nowLocation, accessToken: accessToken};
+                data = '?path='+ selectedFileList[idx].path+selectedFileList[idx].name + '&location='+ nowLocation + '&accessToken='+ accessToken;
             }
-            // axios.get(tmpUrl,{
-            //     params:{
-            //       data
-            //     }
-            //   }).catch(e =>{
-            //     console.log(e);
-            //   })
-            sendToSpring(tmpUrl, 'GET', '', data);
+            tmpUrl+=data;
+            console.log(data);
+            // const result = sendToSpring(tmpUrl, 'GET', '', '');
+            // console.log(result);
         }
         exit(true);
     }
 
     async function getFileList(type:string, path:string) {
-        path = path.replaceAll('\\\\', '\\');
-        console.log(path);
+        console.log(type+', '+path);
+        var tmpLink = '';
         if(type === 'up'){
-            // if(mode === 'private' && location === defaultPrivateLocation+'User_'+user?.userId+'\\'){
-            //     setErrorToast(true);
-            //     setErrorMessage('이미 최상단 폴더입니다.');
-            // }
-            // else 
             if(mode === 'public' && path === defaultPublicLocation){
                 setErrorToast(true);
                 setErrorMessage('이미 최상단 폴더입니다.');
             }
             else {
-                var locationSplit: string[] = path.split('\\');
-                var tmpLink = '';
+                var locationSplit: string[] = path.split(underBar);
                 for(var i=0; i<locationSplit.length-2; i++){
-                    tmpLink += locationSplit[i]+'\\';
+                    tmpLink += locationSplit[i]+underBar;
                 }
                 setNowLocation(tmpLink);
-                path = tmpLink;
+                setMovePath(tmpLink.replace(mode === 'public' ? defaultPublicLocation : defaultPrivateLocation, '').replaceAll(underBar, ' > '));
             }
         }
         else{
             const tmpPath: string[] = path.split(mode === 'public' ? defaultPublicLocation : defaultPrivateLocation);
-            console.log(tmpPath);
+            
             if(tmpPath[1] !== '' && tmpPath !== undefined){
-                tmpPath[1] = tmpPath[1].replaceAll('\\', '-');
+                tmpLink = tmpPath[1];
+                tmpPath[1] = tmpPath[1].replaceAll(underBar, ' > ');
                 setMovePath(tmpPath[1]);
             }
             else{
@@ -112,9 +109,11 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
             }
             setNowLocation(path);
         }
-        const link = mode ==='private' ? 'getPrivateFilesInfo/?location='+encodeURI(path) : 'getPublicFilesInfo/?location='+encodeURI(path); // for test
+        console.log(tmpLink);
+        const link = mode ==='private' ? 'getPrivateFileListInfo/?location='+encodeURI(tmpLink) : 'getPublicFileListInfo/?location='+encodeURI(tmpLink); // for test
 
         const list:any = await sendToSpring('/file/'+link, 'GET', '', '');
+        console.log(list);
         var tmpList: File[] = [];
         for(const idx in list.data){
             var tmpType = '';
@@ -130,6 +129,7 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
                 tmpList.push(object);
             }
         }
+        console.log(tmpList);
         let upObject: File = {
             uuid: 'move up',
             path: path,
@@ -158,7 +158,6 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
         }
         setSelectedFileName(tmpName);
         if(mode === 'private'){
-            const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
             if (accessToken !== null) {
                 GetUserInfo(accessToken)
                 .then((data: User) => {
@@ -196,7 +195,7 @@ export default function MoveFileModal({ click, status, mode, location, selectedF
                     </Form>
                     <ListGroup>
                         {fileList?.map((file, index) =>(
-                            <ListGroup.Item action onClick={() => getFileList(file.type, file.path+'\\')} key={index}>
+                            <ListGroup.Item action onClick={() => getFileList(file.type, file.path+underBar)} key={index}>
                             {file.name}
                         </ListGroup.Item>
                         ))}

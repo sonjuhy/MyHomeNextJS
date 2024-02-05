@@ -14,6 +14,7 @@ import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import NoneFileIcon from '/public/image/icon/nofile.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 import DownloadIcon from '/public/image/icon/download.png';
+import Spinner from  '@/public/image/img/spinner.gif'
 
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import Loading from '@/components/loading/Loading';
@@ -41,6 +42,7 @@ let underBar = '__';
 
 export default function Main() {
     const [dirLoading, setDirLoading] = useState(false);
+    const [dirMoreLoading, setDirMoreLoading] = useState(false);
 
     const defaultPublicLocation = useAppSelector((state)=>state.cloud.defaultPublicPath)+underBar;
     const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultPrivatePath)+underBar;
@@ -86,7 +88,6 @@ export default function Main() {
             else {
                 link = 'getPrivateFileListInfoPage/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
             }
-            console.log(link);
             const list: any = await sendToSpring('/file/' + link, 'GET', '', '');
             if(list.data.length > 0) {
                 for (const idx in list.data) {
@@ -141,6 +142,7 @@ export default function Main() {
             }
         }
         setDirLoading(false);
+        setDirMoreLoading(false);
     }
 
     function itemClick(uuid: string, type: string, path: string, name: string) {
@@ -276,30 +278,20 @@ export default function Main() {
     };
     const clickMkdirModal = () => {
         setMkdirModalVisible(!mkdirModalVisible);
-        const tmpPageNum = pageNumber;
-        getFileList(true);
-            for(let i = 1; i < tmpPageNum; i++) {
-                getFileList(false);
-            }
+        getFileList(false);
         return mkdirModalVisible;
     };
     const clickUploadModal = () => {
         setUploadModalVisible(!uploadModalVisible);
-        const tmpPageNum = pageNumber;
-        getFileList(true);
-            for(let i = 1; i < tmpPageNum; i++) {
-                getFileList(false);
-            }
+        getFileList(false);
         return uploadModalVisible;
     };
     const clickMoveModal = (result: boolean) => {
         setMoveModalVisible(!moveModalVisible);
         if (result) {
-            const tmpPageNum = pageNumber;
-            getFileList(true);
-            for(let i = 1; i < tmpPageNum; i++) {
-                getFileList(false);
-            }
+            setDownloadMode(false);
+            setSelectFileList([]);
+            getFileList(false);
         }
         return moveModalVisible;
     }
@@ -356,6 +348,7 @@ export default function Main() {
 
     const clickDownloadMoreFileInfo = async() => {
         setPageNumber(pageNumber + 1);
+        setDirMoreLoading(true);
     }
 
     useEffect(() => {
@@ -517,7 +510,7 @@ export default function Main() {
                             <div style={{justifyContent:'center', display:'flex', marginTop:'10vh', marginBottom:'10vh'}}>
                                 <Button variant='outline-dark' size='sm' style={{ width:'10rem', height:'10rem'}}>
                                     <Image
-                                    src={DownloadIcon}
+                                    src={dirMoreLoading === false ? DownloadIcon : Spinner}
                                     alt="download"
                                     width={0}
                                     height={0}
