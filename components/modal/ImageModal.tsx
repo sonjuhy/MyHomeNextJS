@@ -38,7 +38,7 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
 
   const videoLoader = (info:string, mode:string) => {
     if(mode === 'public') return '/file/streamingPublicVideo/'+info+'/'+accessToken;
-    else return '/file/streamingPublicVideo/'+info+'/'+accessToken;
+    else return '/file/streamingPrivateVideo/'+info+'/'+accessToken;
   }
   
   async function DownloadFile(){

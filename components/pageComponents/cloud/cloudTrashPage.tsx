@@ -12,9 +12,9 @@ import LogoColor from '/public/image/icon/MyhomeIcon.png';
 import NoneFileIcon from '/public/image/icon/nofile.png';
 import sendToSpring from '@/modules/sendToSpring/sendToSpring';
 
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import Loading from '@/components/loading/Loading';
-import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/features/cloud/cloudSlice';
+import { incrementPageCount, setNowPathStatic, setPageCount } from '@/lib/redux/features/cloud/cloudSlice';
 
 interface File {
     uuid: string;
@@ -42,7 +42,7 @@ export default function Main() {
     const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultTrashPrivatePath)+underBar;
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
 
-    const userId = useAppSelector((state) => state.auth.userId);
+    const userId = useAppSelector((state) => state.auth.id);
     const [stageMode, setStageMode] = useState<string>('public');
     const [place, setPlace] = useState<string>(defaultPublicLocation);
     const [downloadMode, setDownloadMode] = useState(false);
@@ -61,11 +61,13 @@ export default function Main() {
 
     async function getFileList(mode:string) {
         setDirLoading(true);
-        const link = mode ==='private' ? 'getPrivateTrashFiles/?location='+encodeURI(location) : 'getPublicTrashFiles/?location='+encodeURI(location); // need to change findByLocation like cloudPage
+        const link = mode ==='private' ? 'getPrivateTrashFileListInfo/?location='+encodeURI(location) : 'getPublicTrashFileListInfo/?location='+encodeURI(location);
         setPlace(location);
-        const response = await sendToSpring('/file/'+link, 'GET', null, 'null');
+        console.log(link);
+        const response = await sendToSpring('/file/'+link, 'GET', null, null);
         if(response.result === 200){
             const list:any = response.data;
+            console.log(list);
             var tmpList: File[] = [];
             console.log(list.data);
             for(const idx in list.data){
@@ -177,27 +179,19 @@ export default function Main() {
     }
 
     useEffect(() => {
-        
-    },[]);
-
-    useEffect(() => {
         if(stageMode === 'public') {
             setLocation(defaultPublicLocation);
         }
         else{
-            setLocation(defaultPrivateLocation+underBar+userId+'_trash\\');
+            setLocation(defaultPrivateLocation+userId+underBar);
         }
     },[stageMode]);
 
     useEffect(() => {
-        if(stageMode === 'public') {
-            getFileList('public');
-            var path = location.split(defaultPublicLocation)[1];
-            setNowPath(path);
-        }
-        else{
-            
-        }
+        getFileList(stageMode);
+        if(stageMode === 'public') {setNowPath(location === defaultPublicLocation ? '최상위 폴더' : location.replace(defaultPublicLocation, '').replaceAll(underBar, ' > '))}
+        else { setNowPath(location === defaultPrivateLocation ? '최상위 폴더' : location.replace(defaultPrivateLocation, '').replaceAll(underBar, ' > '))}
+        
     },[location]);
     return (
         <>

@@ -46,7 +46,7 @@ export default function Main() {
     const defaultPrivateLocation = useAppSelector((state)=>state.cloud.defaultPrivatePath)+underBar;
     const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
 
-    const userId = useAppSelector((state) => state.auth.userId);
+    const userId = useAppSelector((state) => state.auth.id);
     const [stageMode, setStageMode] = useState<string>('public');
     const [place, setPlace] = useState<string>(defaultPublicLocation);
     const [downloadMode, setDownloadMode] = useState(false);
@@ -81,11 +81,12 @@ export default function Main() {
             var tmpList: File[] = [];
             var link;
             if (stageMode === 'public') {
-                link = 'getPublicFilesPageInfo/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
+                link = 'getPublicFileListInfoPage/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
             }
             else {
-                link = 'getPrivateFilesPageInfo/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
+                link = 'getPrivateFileListInfoPage/?location=' + encodeURI(location) + '&size=20&page=' + pageNumber;
             }
+            console.log(link);
             const list: any = await sendToSpring('/file/' + link, 'GET', '', '');
             if(list.data.length > 0) {
                 for (const idx in list.data) {
@@ -363,7 +364,7 @@ export default function Main() {
             setLocation(defaultPublicLocation);
         }
         else {
-            setLocation(defaultPrivateLocation + underBar + userId + underBar);
+            setLocation(defaultPrivateLocation + userId + underBar);
         }
     }, [stageMode]);
 
