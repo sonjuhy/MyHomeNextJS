@@ -6,12 +6,14 @@ import axios from 'axios';
 
 import FileIcon from '/public/image/icon/file.png';
 import FolderIcon from '/public/image/icon/folder.png';
+import VideoIcon from '/public/image/icon/video.png';
+import ImageIcon from '/public/image/icon/image.png';
 import UpIcon from '/public/image/icon/up.png';
 import ErrorIcon from '/public/image/icon/error.png';
 
 import Loading from '@/components/loading/CloudCardLoading'
 
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Stack, Tooltip } from 'react-bootstrap';
 
 type props = {
     uuid: string;
@@ -43,91 +45,105 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
     return (
         <Card className='shadow' style={{height:'13rem', cursor:'pointer'}}>
             <br/>
-            <Card.Title className='text-center' style={{width:'90%', fontSize:'1rem', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{name}</Card.Title>
-            {type === 'img' && (
-                <div style={{position:'relative', width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
-                <OverlayTrigger 
-                    key={uuid} 
-                    placement={'top'}
-                    overlay={
-                            <Tooltip id={`tooltip-${name}`}>
-                                {name}
-                            </Tooltip>
-                        }
-                    >
-                        <div>
-                            <div style={{position:'absolute', transform:'translate(-50%, -50%)'}}>
-                                <Image
-                                    loader={imageLoader}
-                                    src={uuid}
-                                    alt="cloud image"
-                                    width={0}
-                                    height={0}
-                                    style={{width: '8rem', height: '8rem'}}
-                                    loading="lazy"
-                                    onLoadingComplete={loadingEnd}
-                                    onError={(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                                        const target = event.target as HTMLImageElement;
-                                        target.src = '/public/image/icon/error.png';
-                                      }}
-                                />
-                            </div>
-                        
-                        {!loading && (
-                            <div style={{position:'absolute', opacity:'1', transform:'translate(-50%, -50%)'}}>
-                                <Loading/>
-                            </div>
-                        )}
-                        </div>
-                </OverlayTrigger>
-                </div>
-            )}
-            {type === 'video' && (
-                <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
-                <OverlayTrigger 
-                    key={uuid} 
-                    placement={'top'}
-                    overlay={
-                            <Tooltip id={`tooltip-${name}`}>
-                                {name}
-                            </Tooltip>
-                        }
-                    >
+            <Card.Title className='text-center' style={{width:'90%'}}>
+                <Stack direction='horizontal' style={{display:'flex', alignItems:'center'}}>
                     <Image
-                        loader={thumbNailLoader}
-                        src={uuid}
-                        alt="cloud image"
-                        width={0}
-                        height={0}
-                        style={{width: '8rem', height: '8rem'}}
-                        loading="lazy"
+                    src={type === 'img' ? ImageIcon : type === 'video' ? VideoIcon : FileIcon}
+                    alt='type image'
+                    width={0}
+                    height={0}
+                    style={{width: '2rem', height: '2rem'}}
                     />
-                </OverlayTrigger>
-                </div>
-            )}
-            {(type === 'file' || type ==='dir' || type === 'up') &&(
-                <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
+                    <p style={{margin:'0', width:'90%', fontSize:'1rem', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{name}</p>
+                </Stack>
+            </Card.Title>
+            <Card.Body>
+                {type === 'img' && (
+                    <div style={{position:'relative', width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
                     <OverlayTrigger 
-                    key={uuid} 
-                    placement={'top'}
-                    overlay={
-                            <Tooltip id={`tooltip-${name}`}>
-                                {name}
-                            </Tooltip>
-                        }
-                    >
+                        key={uuid} 
+                        placement={'top'}
+                        overlay={
+                                <Tooltip id={`tooltip-${name}`}>
+                                    {name}
+                                </Tooltip>
+                            }
+                        >
+                            <div>
+                                <div style={{position:'absolute', transform:'translate(-50%, -50%)'}}>
+                                    <Image
+                                        loader={imageLoader}
+                                        src={uuid}
+                                        alt="cloud image"
+                                        width={0}
+                                        height={0}
+                                        style={{width: '8rem', height: '8rem'}}
+                                        loading="eager"
+                                        onLoadingComplete={loadingEnd}
+                                        onError={(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                                            const target = event.target as HTMLImageElement;
+                                            target.src = '/public/image/icon/error.png';
+                                        }}
+                                    />
+                                </div>
+                            
+                            {!loading && (
+                                <div style={{position:'absolute', opacity:'1', transform:'translate(-50%, -50%)'}}>
+                                    <Loading/>
+                                </div>
+                            )}
+                            </div>
+                    </OverlayTrigger>
+                    </div>
+                )}
+                {type === 'video' && (
+                    <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
+                    <OverlayTrigger 
+                        key={uuid} 
+                        placement={'top'}
+                        overlay={
+                                <Tooltip id={`tooltip-${name}`}>
+                                    {name}
+                                </Tooltip>
+                            }
+                        >
                         <Image
-                            alt="Light"
-                            src={type === 'dir' ? FolderIcon : FileIcon}
-                            loading = 'eager'
+                            loader={thumbNailLoader}
+                            src={uuid}
+                            alt="cloud image"
                             width={0}
                             height={0}
-                            style={{width: '10rem', height: '10rem'}}
-                            priority={true}
+                            style={{width: '8rem', height: '8rem'}}
+                            loading="lazy"
                         />
                     </OverlayTrigger>
-                </div>
-            )}
+                    </div>
+                )}
+                {(type === 'file' || type ==='dir' || type === 'up') &&(
+                    <div style={{width:'100%',height:'70%',display:'flex',justifyContent:'center', alignItems:'center',marginTop:'0.5rem'}}>
+                        <OverlayTrigger 
+                        key={uuid} 
+                        placement={'top'}
+                        overlay={
+                                <Tooltip id={`tooltip-${name}`}>
+                                    {name}
+                                </Tooltip>
+                            }
+                        >
+                            <Image
+                                alt="Light"
+                                src={type === 'dir' ? FolderIcon : FileIcon}
+                                loading = 'eager'
+                                width={0}
+                                height={0}
+                                style={{width: '10rem', height: '10rem'}}
+                                priority={true}
+                            />
+                        </OverlayTrigger>
+                    </div>
+                )}
+            </Card.Body>
+            
         </Card>
     );
 }
