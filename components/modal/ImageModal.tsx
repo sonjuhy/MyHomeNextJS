@@ -58,7 +58,7 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
         data:{
           path: '',
           name: 'download',
-          uuidName: info,
+          uuid: info,
           type: 'file',
           size: 0,
           location: '',
@@ -66,6 +66,7 @@ export default function ImageModal({click, status, info, mode, type, name}: Moda
         },
       })
         .then((response) => {
+          console.log(response);
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
