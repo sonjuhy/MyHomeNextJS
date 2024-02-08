@@ -30,7 +30,7 @@ export default function CloudCard({uuid, name, type, path, mode}:props): JSX.Ele
     const [loading, setLoading] = useState(false);
 
     const imageLoader = ({src}:loaderProps) => {
-        if(mode === 'public') return '/file/downloadPublicMedia/'+src+'/'+accessToken;
+        if(mode === 'public') return '/file/downloadPublicImageLowQuality/'+src+'/'+accessToken;
         else return '/file/downloadPrivateMedia/'+src+'/'+accessToken;    
     }
 
