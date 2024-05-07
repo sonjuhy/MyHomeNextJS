@@ -1,20 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  output: "standalone",
   reactStrictMode: false,
   env: {
     BASE_URL: process.env.SERVER_ADDRESS,
   },
-  async rewrites(){
-    return[
+  async rewrites() {
+    return [
       {
-        source: '/:path*',
-        destination: process.env.SERVER_ADDRESS+'/:path*',
+        source: "/:path*",
+        destination: process.env.SERVER_ADDRESS + "/:path*",
       },
     ];
   },
-}
-const withPWA = require('next-pwa')({
-  dest: 'public',
+};
+const withPWA = require("next-pwa")({
+  dest: "public",
+  disable: process.env.NODE_ENV === "production" ? false : true,
 });
 module.exports = withPWA(nextConfig);

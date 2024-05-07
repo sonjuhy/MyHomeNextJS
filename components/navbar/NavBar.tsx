@@ -1,42 +1,98 @@
-import Link from "next/link"
-import Image from "next/image"
-import Logo from "/public/image/icon/MyHomeIcon-white.png"
-import LogoColor from "/public/image/icon/MyhomeIcon.png"
-import Login from "/public/image/icon/login.png"
-import LoginWhite from "/public/image/icon/login-white.png"
-import Logout from "/public/image/icon/logout.png"
-import LogoutWhite from "/public/image/icon/logout-white.png"
+import Link from "next/link";
+import Image from "next/image";
+import Logo from "/public/image/icon/MyHomeIcon-white.png";
+import LogoColor from "/public/image/icon/MyhomeIcon.png";
+import Login from "/public/image/icon/login.png";
+import LoginWhite from "/public/image/icon/login-white.png";
+import Logout from "/public/image/icon/logout.png";
+import LogoutWhite from "/public/image/icon/logout-white.png";
 
-import {useState} from 'react';
-import { Container, Nav, Navbar } from "react-bootstrap"
-import { useRouter } from "next/router"
+import { useRef, useState } from "react";
+import { Container, Nav, Navbar } from "react-bootstrap";
+import { useRouter } from "next/router";
+import { Button } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
+import { changeLanguage } from "@/lib/redux/features/pageType/pageSlice";
+
+const options = ["한글", "English"];
 
 type NavProps = {
-  back : string;
-  mode : string;
-  sign : boolean;
-}
+  back: string;
+  mode: string;
+  sign: boolean;
+};
 
-export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
-  const [logoSrc, setLogoSrc] = useState(mode === 'dark' ? Logo : LogoColor);
-  const [signLogo, setSignLogo] = useState(mode === 'dark' ? LoginWhite : Login);
-  const [logOutLogo, setLogOutLogo] = useState(mode === 'dark' ? LogoutWhite : Logout);
+export default function NavBar({ back, mode, sign }: NavProps): JSX.Element {
+  const dispatch = useAppDispatch();
+  const languageMode = useAppSelector((state) => state.page.language);
+
+  const [logoSrc, setLogoSrc] = useState(mode === "dark" ? Logo : LogoColor);
+  const [signLogo, setSignLogo] = useState(
+    mode === "dark" ? LoginWhite : Login
+  );
+  const [logOutLogo, setLogOutLogo] = useState(
+    mode === "dark" ? LogoutWhite : Logout
+  );
+  const [lan, setLan] = useState(languageMode);
+
   const router = useRouter();
 
-  function logOut(){
-    console.log('logout');
-    const accessToken = typeof window !== 'undefined' ? sessionStorage.getItem('accessToken') : null;
-    if(accessToken !== null){
-      sessionStorage.removeItem('accessToken');
+  const changeLan = () => {
+    setLan(!languageMode);
+    dispatch(changeLanguage(!languageMode));
+  };
+  function logOut() {
+    const accessToken =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("accessToken")
+        : null;
+    if (accessToken !== null) {
+      sessionStorage.removeItem("accessToken");
       // router.reload();
-      router.push('/');
+      router.push("/");
     }
   }
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const [selectedIndex, setSelectedIndex] = useState(1);
+
+  const handleClick = () => {
+    console.info(`You clicked ${options[selectedIndex]}`);
+  };
+
+  const handleMenuItemClick = (
+    event: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    index: number
+  ) => {
+    setSelectedIndex(index);
+    setOpen(false);
+  };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event: Event) => {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   return (
-    <Navbar bg={back} expand="lg" sticky="top" variant={mode} className="mainNavBar">
+    <Navbar
+      bg={back}
+      expand="lg"
+      sticky="top"
+      variant={mode}
+      className="mainNavBar"
+    >
       <Container className="container">
-        <Navbar.Brand >
+        <Navbar.Brand>
           <Link href="/" className="nav-link">
             <Image
               src={logoSrc}
@@ -45,18 +101,24 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
               className="d-inline-block align-top"
               alt="React Bootstrap logo"
               priority={true}
+              style={{ marginRight: "0.5rem" }}
             />
             MyHome
           </Link>
-          </Navbar.Brand>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Link href='/about' className="nav-link">about</Link>
+            <Link href="/about" className="nav-link">
+              about
+            </Link>
           </Nav>
           <div className="d-flex">
+            <Button color="info" onClick={changeLan}>
+              {lan ? "한" : "ENG"}
+            </Button>
             {!sign && (
-              <Link href='/signin'>
+              <Link href="/signin">
                 <Image
                   src={signLogo}
                   width="50"
@@ -65,11 +127,11 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
                   alt="sign in logo"
                   priority={true}
                 />
-            </Link>
+              </Link>
             )}
             {sign && (
               <a onClick={logOut} className="logout">
-              <Image
+                <Image
                   src={logOutLogo}
                   width="50"
                   height="50"
@@ -77,26 +139,24 @@ export default function NavBar({back, mode, sign}: NavProps): JSX.Element {
                   alt="log out logo"
                   priority={true}
                 />
-            </a>
+              </a>
             )}
           </div>
         </Navbar.Collapse>
       </Container>
       <style jsx>
-        {
-          `
-          .nav-link{
+        {`
+          .nav-link {
             text-decoration-line: none;
-            color: ${mode == 'dark' ? 'white' : 'black'};
+            color: ${mode == "dark" ? "white" : "black"};
           }
-          .container{
-            color : white;
+          .container {
+            color: white;
           }
           .logout {
             cursor: pointer;
           }
-          `
-        }
+        `}
       </style>
     </Navbar>
   );
