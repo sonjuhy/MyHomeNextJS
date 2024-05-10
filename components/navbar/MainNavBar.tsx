@@ -127,6 +127,7 @@ export default function NavBar({
               src={LogoColor}
               width="35"
               height="35"
+              sizes="(min-width: 320px) 100%, 100%"
               className="d-inline-block align-top"
               alt="React Bootstrap logo"
               priority={true}
@@ -204,8 +205,8 @@ export default function NavBar({
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Link href="/about" className="nav-link">
-              about
+            <Link href="/about" className="nav-link" style={{ color: "black" }}>
+              About
             </Link>
           </Nav>
           <div className="d-flex">

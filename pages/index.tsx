@@ -2,16 +2,13 @@ import Banner from "@/components/banner/Banner";
 import MiddleBanner from "@/components/banner/MiddleBanner";
 import BottomBanner from "@/components/banner/BottomBanner";
 import Footer from "@/components/footer/Footer";
-import Carousel from "@/components/carousel/Carousel";
-import TopicCard from "@/components/card/TopicCard";
 import AuthValidate from "@/modules/authValidate/authValidate";
 
 import LogoColor from "/public/image/icon/MyhomeIcon.png";
 
-import { Container, Row, Col, ToastContainer, Toast } from "react-bootstrap";
+import { ToastContainer, Toast } from "react-bootstrap";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 
@@ -23,13 +20,13 @@ export default function Home() {
   const router = useRouter();
 
   async function userPermissionCheck() {
-    console.log(
-      typeof window !== "undefined"
-        ? sessionStorage.getItem("accessToken") !== null
-          ? true
-          : false
-        : false
-    );
+    // console.log(
+    //   typeof window !== "undefined"
+    //     ? sessionStorage.getItem("accessToken") !== null
+    //       ? 0
+    //       : 1
+    //     : 2
+    // );
     if (
       typeof window !== "undefined"
         ? sessionStorage.getItem("accessToken") !== null
@@ -37,6 +34,7 @@ export default function Home() {
           : false
         : false
     ) {
+      console.log("before authvalidate check");
       AuthValidate()
         .then(() => {
           setSign(true);

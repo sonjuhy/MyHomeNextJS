@@ -144,7 +144,13 @@ export default function Main() {
   }, []);
 
   return (
-    <div id="main-container" style={{ backgroundColor: "#EEEEEE" }}>
+    <div
+      id="main-container"
+      style={{
+        backgroundColor: "#EEEEEE",
+        paddingBottom: "4rem",
+      }}
+    >
       <ToastContainer className="p-3" position={"top-start"}>
         <Toast
           show={errorToast}
@@ -167,8 +173,6 @@ export default function Main() {
           <Toast.Body>{errorMessage}</Toast.Body>
         </Toast>
       </ToastContainer>
-      {/* <NavBar back={theme} mode={theme} sign={true} /> */}
-
       <div>
         {visible && (
           <div>

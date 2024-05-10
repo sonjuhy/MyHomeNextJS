@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Card from "react-bootstrap/Card";
 import axios from "axios";
 import sendToSpring from "@/modules/sendToSpring/sendToSpring";
+import { Skeleton } from "@mui/material";
 
 function ImgOverlayExample() {
   const [weather, setWeather] = useState("맑음");
@@ -10,6 +11,7 @@ function ImgOverlayExample() {
   const [temperature, setTemperature] = useState("21");
   const [time, setTime] = useState("00:00");
   const [picture, setPicture] = useState("image/img/weather/weather-sunny.jpg");
+  const [loadingCheck, setLoadingCheck] = useState(false);
 
   const sunny = "image/img/weather/weather-sunny.jpg";
   const cloudy = "image/img/weather/weather-cloudy.jpg";
@@ -73,6 +75,7 @@ function ImgOverlayExample() {
         }
       }
       setTime(weatherInfo.fcstTime + " 기준");
+      setLoadingCheck(true);
     }
   }
 
@@ -80,31 +83,43 @@ function ImgOverlayExample() {
     getVilageFcst();
   }, []);
   return (
-    <Card
-      className="bg-dark text-white shadow mb-5"
-      style={{ height: "25vh", borderRadius: "25px" }}
-    >
-      <Card.Img
-        src={picture}
-        className="img-fluid"
-        style={{
-          height: "25vh",
-          objectFit: "cover",
-          opacity: "0.6",
-          borderRadius: "25px",
-        }}
-        alt="Card image"
-      />
-      <Card.ImgOverlay>
-        <Card.Title>{weather}</Card.Title>
-        <br />
-        <Card.Text>
-          {wind}, {temperature} °C
-        </Card.Text>
-        <Card.Text>강수량 : {rain}</Card.Text>
-        <Card.Text>경상남도 창원시 성산구, {time}.</Card.Text>
-      </Card.ImgOverlay>
-    </Card>
+    <>
+      {loadingCheck ? (
+        <>
+          <Card
+            className="bg-dark text-white shadow mb-5"
+            style={{ height: "25vh", borderRadius: "25px" }}
+          >
+            <Card.Img
+              src={picture}
+              className="img-fluid"
+              style={{
+                height: "25vh",
+                objectFit: "cover",
+                opacity: "0.6",
+                borderRadius: "25px",
+              }}
+              alt="Card image"
+            />
+            <Card.ImgOverlay>
+              <Card.Title>{weather}</Card.Title>
+              <br />
+              <Card.Text>
+                {wind}, {temperature} °C
+              </Card.Text>
+              <Card.Text>강수량 : {rain}</Card.Text>
+              <Card.Text>경상남도 창원시 성산구, {time}.</Card.Text>
+            </Card.ImgOverlay>
+          </Card>
+        </>
+      ) : (
+        <Skeleton
+          variant="rounded"
+          animation={"wave"}
+          style={{ height: "25vh", borderRadius: "25px" }}
+        />
+      )}
+    </>
   );
 }
 

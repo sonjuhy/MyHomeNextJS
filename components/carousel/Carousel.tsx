@@ -16,6 +16,7 @@ function CarouselAboutService() {
             className="d-block w-100"
             src={IoTImage}
             alt="arduino"
+            sizes="(min-width: 320px) 100%, 100%"
             objectFit="cover"
             layout="fill"
             quality={90}
@@ -34,6 +35,7 @@ function CarouselAboutService() {
             className="d-block w-100"
             src={WeatherImage}
             alt="web"
+            sizes="(min-width: 320px) 100%, 100%"
             objectFit="cover"
             layout="fill"
             quality={90}
@@ -52,6 +54,7 @@ function CarouselAboutService() {
             className="d-block w-100"
             src={NoticeImage}
             alt="android"
+            sizes="(min-width: 320px) 100%, 100%"
             objectFit="cover"
             layout="fill"
             quality={90}
@@ -70,6 +73,7 @@ function CarouselAboutService() {
             className="d-block w-100"
             src={CloudImage}
             alt="cloud"
+            sizes="(min-width: 320px) 100%, 100%"
             objectFit="cover"
             layout="fill"
             quality={90}

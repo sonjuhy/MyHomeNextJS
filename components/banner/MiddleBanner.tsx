@@ -212,6 +212,7 @@ const MiddleBanner = () => {
                   <Image
                     alt="main_banner"
                     src={WebImage}
+                    sizes="(min-width: 320px) 100%, 100%"
                     fill
                     style={{ objectFit: "cover" }}
                   />
@@ -285,6 +286,7 @@ const MiddleBanner = () => {
                     <Image
                       alt="main_banner"
                       src={AndroidImage}
+                      sizes="(min-width: 320px) 100%, 100%"
                       fill
                       style={{ objectFit: "cover" }}
                     />
