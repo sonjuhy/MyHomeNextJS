@@ -11,6 +11,10 @@ const nextConfig = {
         source: "/:path*",
         destination: process.env.SERVER_ADDRESS + "/:path*",
       },
+      {
+        source: "/myhomeLog/:path*",
+        destination: "http://127.0.0.1:3002/myhomeLog/:path*",
+      },
     ];
   },
 };
