@@ -6,6 +6,7 @@ import NoticePage from "@/components/pageComponents/notice/noticePage";
 import LightPage from "@/components/pageComponents/light/lightPage";
 import CloudPage from "@/components/pageComponents/cloud/cloudPage";
 import CloudTrashPage from "@/components/pageComponents/cloud/cloudTrashPage";
+import WeatherPage from "@/components/pageComponents/weather/weatherPage";
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -28,7 +29,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Box, Divider, Stack, Typography } from "@mui/material";
+import { Box, Divider, Snackbar, Stack, Typography } from "@mui/material";
 
 interface User {
   userId: number;
@@ -54,6 +55,7 @@ export default function Main() {
   const [errorToast, setErrorToast] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [navOverlay, setNavOverlay] = useState(false);
+  const [snackBarStatus, setSnackBarStatus] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -233,9 +235,18 @@ export default function Main() {
                         width={30}
                         height={30}
                         onClick={() => {
-                          router.push("/setting");
+                          // router.push("/setting");
+                          setSnackBarStatus(!snackBarStatus);
                         }}
                         style={{ cursor: "pointer" }}
+                      />
+                      <Snackbar
+                        open={snackBarStatus}
+                        autoHideDuration={3000}
+                        message={"아직 구현 중 입니다."}
+                        onClose={() => {
+                          setSnackBarStatus(false);
+                        }}
                       />
                     </Box>
                   </div>
@@ -295,12 +306,12 @@ export default function Main() {
                       {cloudSpecifiedCategory ? (
                         <Typography>
                           Cloud
-                          <KeyboardArrowDownIcon />
+                          <KeyboardArrowUpIcon />
                         </Typography>
                       ) : (
                         <Typography>
                           Cloud
-                          <KeyboardArrowUpIcon />
+                          <KeyboardArrowDownIcon />
                         </Typography>
                       )}
                     </div>
@@ -373,7 +384,7 @@ export default function Main() {
                     ) : category === "light" ? (
                       <LightPage />
                     ) : category === "weather" ? (
-                      <div>Weather</div>
+                      <WeatherPage />
                     ) : category === "cloud" ? (
                       <CloudPage />
                     ) : category === "cloudTrash" ? (

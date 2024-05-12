@@ -180,7 +180,7 @@ export default function LightSelector({ room }: props): JSX.Element {
                 <TableBody>
                   {Array.from({ length: reservationList.length }).map(
                     (_, index: number) => (
-                      <TableRow>
+                      <TableRow key={index}>
                         <TableCell>{reservationList[index].name}</TableCell>
                         <TableCell>{reservationList[index].roomKor}</TableCell>
                         <TableCell>{reservationList[index].time}</TableCell>

@@ -20,6 +20,7 @@ import {
   MenuList,
   Paper,
   Popper,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
@@ -141,58 +142,6 @@ export default function NavBar({
             >
               {category}
             </Typography>
-            {pageSize > 0 && (
-              <>
-                <div ref={anchorRef}>
-                  <Button onClick={handleToggle}>
-                    <MenuIcon />
-                  </Button>
-                </div>
-
-                <Popper
-                  sx={{
-                    zIndex: 1,
-                  }}
-                  open={open}
-                  anchorEl={anchorRef.current}
-                  role={undefined}
-                  transition
-                  disablePortal
-                >
-                  {({ TransitionProps, placement }) => (
-                    <Grow
-                      {...TransitionProps}
-                      style={{
-                        transformOrigin:
-                          placement === "bottom"
-                            ? "center top"
-                            : "center bottom",
-                      }}
-                    >
-                      <Paper>
-                        <ClickAwayListener onClickAway={handleClose}>
-                          <MenuList id="split-button-menu" autoFocusItem>
-                            {options.map((option, index) => (
-                              <MenuItem
-                                key={option}
-                                selected={index === selectedIndex}
-                                onClick={(event) =>
-                                  handleMenuItemClick(event, index)
-                                }
-                              >
-                                <Typography variant="overline">
-                                  {option}
-                                </Typography>
-                              </MenuItem>
-                            ))}
-                          </MenuList>
-                        </ClickAwayListener>
-                      </Paper>
-                    </Grow>
-                  )}
-                </Popper>
-              </>
-            )}
           </Box>
         </Navbar.Brand>
         <Navbar.Toggle
@@ -204,25 +153,87 @@ export default function NavBar({
           }}
         />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Link href="/about" className="nav-link" style={{ color: "black" }}>
-              About
-            </Link>
-          </Nav>
+          {pageSize < 1 ? (
+            <Nav className="me-auto">
+              <Link
+                href="/about"
+                className="nav-link"
+                style={{ color: "black" }}
+              >
+                About
+              </Link>
+            </Nav>
+          ) : (
+            <Nav className="me-auto">
+              <div ref={anchorRef}>
+                <Button onClick={handleToggle}>
+                  <MenuIcon />
+                </Button>
+              </div>
+
+              <Popper
+                sx={{
+                  zIndex: 1,
+                }}
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === "bottom" ? "center top" : "center bottom",
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList id="split-button-menu" autoFocusItem>
+                          {options.map((option, index) => (
+                            <MenuItem
+                              key={option}
+                              selected={index === selectedIndex}
+                              onClick={(event) =>
+                                handleMenuItemClick(event, index)
+                              }
+                            >
+                              <Typography variant="overline">
+                                {option}
+                              </Typography>
+                            </MenuItem>
+                          ))}
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </Nav>
+          )}
+          {/* {pageSize > 0 && (
+            
+          )} */}
           <div className="d-flex">
-            <Button color="info" onClick={changeLan}>
-              {lan ? "한" : "ENG"}
-            </Button>
-            <a onClick={logOut} className="logout">
-              <Image
-                src={Logout}
-                width="50"
-                height="50"
-                className="d-inline-block align-top"
-                alt="log out logo"
-                priority={true}
-              />
-            </a>
+            <Tooltip title={lan ? "한국어로 변경" : "Change to English"}>
+              <Button color="info" onClick={changeLan}>
+                {lan ? "한" : "ENG"}
+              </Button>
+            </Tooltip>
+            <Tooltip title="LOG OUT">
+              <a onClick={logOut} className="logout">
+                <Image
+                  src={Logout}
+                  width="50"
+                  height="50"
+                  className="d-inline-block align-top"
+                  alt="log out logo"
+                  priority={true}
+                />
+              </a>
+            </Tooltip>
           </div>
         </Navbar.Collapse>
       </Container>
