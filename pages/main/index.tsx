@@ -6,6 +6,7 @@ import NoticePage from "@/components/pageComponents/notice/noticePage";
 import LightPage from "@/components/pageComponents/light/lightPage";
 import CloudPage from "@/components/pageComponents/cloud/cloudPage";
 import CloudTrashPage from "@/components/pageComponents/cloud/cloudTrashPage";
+import WeatherPage from "@/components/pageComponents/weather/weatherPage";
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -373,7 +374,7 @@ export default function Main() {
                     ) : category === "light" ? (
                       <LightPage />
                     ) : category === "weather" ? (
-                      <div>Weather</div>
+                      <WeatherPage />
                     ) : category === "cloud" ? (
                       <CloudPage />
                     ) : category === "cloudTrash" ? (
