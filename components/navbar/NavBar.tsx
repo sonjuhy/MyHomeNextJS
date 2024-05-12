@@ -10,7 +10,7 @@ import LogoutWhite from "/public/image/icon/logout-white.png";
 import { useRef, useState } from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { useRouter } from "next/router";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { changeLanguage } from "@/lib/redux/features/pageType/pageSlice";
 
@@ -83,32 +83,38 @@ export default function NavBar({ back, mode, sign }: NavProps): JSX.Element {
             </Link>
           </Nav>
           <div className="d-flex">
-            <Button color="info" onClick={changeLan}>
-              {lan ? "한" : "ENG"}
-            </Button>
+            <Tooltip title={lan ? "한국어로 변경" : "Change to English"}>
+              <Button color="info" onClick={changeLan}>
+                {lan ? "한" : "ENG"}
+              </Button>
+            </Tooltip>
             {!sign && (
-              <Link href="/signin">
-                <Image
-                  src={signLogo}
-                  width="50"
-                  height="50"
-                  className="d-inline-block align-top"
-                  alt="sign in logo"
-                  priority={true}
-                />
-              </Link>
+              <Tooltip title="LOG IN">
+                <Link href="/signin">
+                  <Image
+                    src={signLogo}
+                    width="50"
+                    height="50"
+                    className="d-inline-block align-top"
+                    alt="sign in logo"
+                    priority={true}
+                  />
+                </Link>
+              </Tooltip>
             )}
             {sign && (
-              <a onClick={logOut} className="logout">
-                <Image
-                  src={logOutLogo}
-                  width="50"
-                  height="50"
-                  className="d-inline-block align-top"
-                  alt="log out logo"
-                  priority={true}
-                />
-              </a>
+              <Tooltip title="LOG OUT">
+                <a onClick={logOut} className="logout">
+                  <Image
+                    src={logOutLogo}
+                    width="50"
+                    height="50"
+                    className="d-inline-block align-top"
+                    alt="log out logo"
+                    priority={true}
+                  />
+                </a>
+              </Tooltip>
             )}
           </div>
         </Navbar.Collapse>

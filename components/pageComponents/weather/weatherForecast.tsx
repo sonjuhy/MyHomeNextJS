@@ -53,7 +53,7 @@ export default function ForecastWeather() {
       "",
       ""
     );
-    if (response.data) {
+    if (response.result === 200 && response.data) {
       const tmpList: ForecastInfo[] = [];
       for (const item of response.data) {
         tmpList.push({
