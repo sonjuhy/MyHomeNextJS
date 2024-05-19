@@ -1,7 +1,5 @@
 # MyHome Project Ver 2.0
 
-### 민영이 테스트
-
 ## 개요
 
 기존 MyHome Project 1.0을 성공적으로 마무리 하고 모바일로만 가능한 접근 한계를 웹으로 넓히고 레거시 코드들을 리팩토링하며 안정성, 성능, 편의성을 업그레이드 하고자 한다.
@@ -94,16 +92,18 @@
 ## 작동 캡쳐
 
 - 로그인 이후 메인 화면
-  ![MyHome_Main](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/6ed19181-43d1-43ca-be79-573508770966)
-- 로그인 이후 메인 화면 - 2
-  ![MyHome_Main2](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/7abe9dcd-4312-428e-8008-0396925cde25)
+  ![main](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/0ff32677-aee0-4470-ac0a-39a940767f66)
 - Cloud 페이지 (공용폴더)
-  ![MyHome_Cloud](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/17c6135f-5833-458e-911a-7e35409d001e)
+  ![cloud](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/3ccf6bc7-c776-4fc1-a417-380c61b5c3a8)
 - Cloud 페이지 (이미지 클릭시)
-  ![MyHome_Cloud_img](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/74dbe83b-7c35-458a-a900-90f6e4457570)
+  ![cloud_img](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/c1aee123-0702-486f-b4f0-d8f4db87ff37)
 - Cloud 페이지 (영상 클릭시)
-  ![MyHome_Cloud](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/17c6135f-5833-458e-911a-7e35409d001e)
+  ![cloud_video](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/2fce449e-34dd-40d2-a808-c02dd27b0d7d)
 - Cloud 페이지 (여러 파일들 선택 - 다운로드 가능)
-  ![MyHome_Cloud_select](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/5ecc7a8e-f4c0-4236-9805-9cecf5e337b6)
-- Cloud 페이지 (업로드)
-  ![MyHome_Cloud_upload](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/3adf951c-925f-4a21-9e2b-b986da1139e1)
+  ![cloud_multi_select](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/ffc3d745-fd4d-4d81-9346-6d09c10a3103)
+- Weather 메인 페이지
+  ![weather](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/3adf951c-925f-4a21-9e2b-b986da1139e1)
+- IoT 메인 페이지 1
+  ![light_1](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/6164b913-4e5f-4398-b7e1-4415124d9dc0)
+- IoT 메인 페이지 2
+  ![light_2](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/4b23d375-e8a4-4dbf-8540-75c12d473d50)
