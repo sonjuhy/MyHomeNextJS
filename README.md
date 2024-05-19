@@ -92,7 +92,9 @@
 ## 작동 캡쳐
 
 - 로그인 이후 메인 화면
+
   ![main](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/0ff32677-aee0-4470-ac0a-39a940767f66)
+
 - Cloud 페이지 (공용폴더)
   ![cloud](https://github.com/sonjuhy/MyHomeNextJS/assets/2987059/3ccf6bc7-c776-4fc1-a417-380c61b5c3a8)
 - Cloud 페이지 (이미지 클릭시)
